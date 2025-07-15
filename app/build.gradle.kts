@@ -40,6 +40,12 @@ android {
 }
 
 dependencies {
+    //ナビゲーション
+    implementation(libs.androidx.navigation.compose)            //navigation
+    androidTestImplementation(libs.androidx.navigation.testing)   //navigationTest
+    //M3関係
+    implementation(libs.androidx.material.icons.extended)   //アイコンを使用する場合
+    debugImplementation(libs.ui.tooling)    //プレビュー用
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
