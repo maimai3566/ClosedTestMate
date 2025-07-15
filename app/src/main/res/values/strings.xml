@@ -3,4 +3,17 @@
     <string name="tab_text_1">テスター募集</string>
     <string name="tab_text_2">質問コーナー</string>
     <string name="tab_text_3">リリース報告</string>
+
+    <string name="login">ログイン</string>
+    <string name="logout">ログアウト</string>
+    <string name="signup">サインアップ</string>
+    <string name="email">メールアドレス</string>
+    <string name="pw">パスワード</string>
+    <string name="placeholder_email">xxxxxx@exsample.com</string>
+    <string name="skip_login">ログインしないで続ける</string>
+    <string name="forgot_pw">パスワードを忘れた</string>
+    <string name="pw_hide">パスワードを隠す</string>
+    <string name="show_pw">パスワードを見せる</string>"
+
+    <string name="msg_login_error">ログインできませんでした。</string>
 </resources>

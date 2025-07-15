@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168103096122",
+    "project_id": "closed-test-mate",
+    "storage_bucket": "closed-test-mate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168103096122:android:c43dd41962a6a833dfaa03",
+        "android_client_info": {
+          "package_name": "com.rururi.closedtestmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjvwBa2F-F0eyeeDZ64MYZkkrOsTlQbDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
