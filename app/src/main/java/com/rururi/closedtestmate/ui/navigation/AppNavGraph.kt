@@ -1,13 +1,13 @@
 package com.rururi.closedtestmate.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposableTarget
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.rururi.closedtestmate.ui.TabListViewModel
 import com.rururi.closedtestmate.ui.login.LoginScreen
 import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailScreen
 import com.rururi.closedtestmate.ui.recruitlist.RecruitListScreen
@@ -25,7 +25,7 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
@@ -33,7 +33,7 @@ fun AppNavGraph(
         modifier = modifier
     ) {
         composable(Screen.Login.route) {
-            LoginScreen()
+            LoginScreen(onLoginClick = { navController.navigate(Screen.RecruitList.route) })
         }
         composable(Screen.RecruitList.route) {
             RecruitListScreen()

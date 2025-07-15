@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">クローズドテスト協力しよ？</string>
+    <string name="tab_text_1">テスター募集</string>
+    <string name="tab_text_2">質問コーナー</string>
+    <string name="tab_text_3">リリース報告</string>
 </resources>
