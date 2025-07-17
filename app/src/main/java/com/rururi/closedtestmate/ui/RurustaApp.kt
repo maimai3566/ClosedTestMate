@@ -19,10 +19,11 @@ fun RurustaApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val hideTopBarRoutes = listOf(Screen.Login.route, Screen.Signup.route)
 
     Scaffold(
         topBar = {
-            if (currentRoute != Screen.Login.route) {
+            if (currentRoute !in hideTopBarRoutes) {    //authルートにいるときはトップバーを表示させない
                 RurustaTopBar(title = stringResource(R.string.app_name))
             }
         },

@@ -6,9 +6,14 @@
 
     <string name="login">ログイン</string>
     <string name="logout">ログアウト</string>
-    <string name="signup">サインアップ</string>
+
+    <string name="signup">新しいアカウントを作る</string>
+    <string name="signup_title">アカウントを登録してね</string>
+    <string name="signup_button">新規募集</string>
+
     <string name="email">メールアドレス</string>
     <string name="pw">パスワード</string>
+    <string name="display_name">ニックネーム</string>
     <string name="placeholder_email">xxxxxx@exsample.com</string>
     <string name="skip_login">ログインしないで続ける</string>
     <string name="forgot_pw">パスワードを忘れた</string>

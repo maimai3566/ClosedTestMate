@@ -1,6 +1,7 @@
 package com.rururi.closedtestmate.ui.login
 
 import android.R.attr.enabled
+import android.R.attr.text
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,15 +34,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import com.rururi.closedtestmate.R
 import com.rururi.closedtestmate.model.UserProfileUiState
 
 @Composable
 fun LoginScreen(
+    modifier: Modifier = Modifier,
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onLogin: () -> Unit = {},
+    onForgotPw: () -> Unit = {},
+    onSignup: () -> Unit = {},
     onSkipLogin: () -> Unit = {},
     uiState: UserProfileUiState,
 ){
@@ -53,7 +59,7 @@ fun LoginScreen(
     var pwVisible by remember { mutableStateOf(false) } //パスワード表示有無
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -66,7 +72,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = { Text(text = stringResource(R.string.email)) },
+            label = { Text(text = stringResource(R.string.email) + "*") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
@@ -75,7 +81,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = { Text(text = stringResource(R.string.pw)) },
+            label = { Text(text = stringResource(R.string.pw) + "*") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -101,9 +107,25 @@ fun LoginScreen(
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         //パスワードを忘れた / 新規登録
         Row{
-            Text(text = stringResource(R.string.forgot_pw))
+            //パスワードを忘れた
+            TextButton(
+                onClick = onForgotPw,
+            ){
+                Text(
+                    stringResource(R.string.forgot_pw),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
             Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
-            Text(text = stringResource(R.string.signup))
+            //サインアップ
+            TextButton(
+                onClick = onSignup,
+            ){
+                Text(
+                    stringResource(R.string.signup),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
         }
 
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
@@ -123,5 +145,5 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     val uiState = UserProfileUiState()
-    LoginScreen(onEmailChange = {}, onPasswordChange = {}, onLogin = {}, uiState = uiState)
+    LoginScreen(uiState = uiState)
 }

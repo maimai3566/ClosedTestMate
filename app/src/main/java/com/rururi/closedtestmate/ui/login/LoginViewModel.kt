@@ -21,6 +21,23 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    //状態をリセット
+    fun resetUiState() {
+        _uiState.update {
+            it.copy(
+                isLoggedIn = false,
+                error = "",
+                email = "",
+                pw = "",
+                userId = "",
+                name = "",
+                photoUrl = "",
+                isAnonymous = false,
+                isLoading = false,
+            )
+        }
+    }
+    //ログイン
     fun login(onSuccess:()->Unit,onError:(String)->Unit) {
         val email = _uiState.value.email
         val password = _uiState.value.pw
@@ -32,7 +49,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                 _uiState.update {
                     it.copy(
                         userId = user?.uid ?: "",
-                        displayName = user?.displayName ?: "",
+                        name = user?.displayName ?: "",
                         email = user?.email ?: "",
                         photoUrl = user?.photoUrl?.toString() ?: "",
                         isAnonymous = user?.isAnonymous ?: false,
