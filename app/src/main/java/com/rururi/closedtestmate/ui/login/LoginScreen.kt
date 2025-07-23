@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,7 @@ import com.rururi.closedtestmate.model.UserProfileUiState
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
+    onMessageReset: () -> Unit = {},
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onLogin: () -> Unit = {},
@@ -57,6 +59,8 @@ fun LoginScreen(
     val keyboardController = LocalSoftwareKeyboardController.current    //キーボード
 
     var pwVisible by remember { mutableStateOf(false) } //パスワード表示有無
+
+    LaunchedEffect(Unit) { onMessageReset() }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -105,6 +109,14 @@ fun LoginScreen(
             Text(text = stringResource(R.string.login))
         }
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
+        //エラー表示
+        if (uiState.error.isNotBlank()) {
+            Text(
+                text = uiState.error,
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
+        }
         //パスワードを忘れた / 新規登録
         Row{
             //パスワードを忘れた
