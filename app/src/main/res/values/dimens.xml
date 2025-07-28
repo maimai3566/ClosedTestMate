@@ -17,6 +17,7 @@
     <dimen name="icon_small">36dp</dimen>
     <dimen name="icon_medium">48dp</dimen>
     <dimen name="icon_large">64dp</dimen>
+    <dimen name="icon_extra_large">96dp</dimen>
     <dimen name="shapes_round">48dp</dimen>
     <dimen name="circle_size">100dp</dimen>
     <dimen name="dot_large">30dp</dimen>

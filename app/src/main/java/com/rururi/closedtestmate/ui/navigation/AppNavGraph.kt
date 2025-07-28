@@ -1,7 +1,5 @@
 package com.rururi.closedtestmate.ui.navigation
 
-import android.view.Gravity
-import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,15 +20,17 @@ import com.rururi.closedtestmate.ui.recruitnew.RecruitNewScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rururi.closedtestmate.ui.login.SignupScreen
 import androidx.navigation.compose.navigation
+import com.google.firebase.auth.FirebaseAuth
 import com.rururi.closedtestmate.R
+import com.rururi.closedtestmate.model.RecruitUiState
 import com.rururi.closedtestmate.ui.anime.SlideMessage
 import com.rururi.closedtestmate.ui.login.ForgotPasswordScreen
+import com.rururi.closedtestmate.ui.recruitnew.RecruitNewViewModel
+import androidx.core.net.toUri
+import com.rururi.closedtestmate.model.SaveStatus
+import com.rururi.closedtestmate.ui.recruitlist.RecruitListViewModel
 
 sealed class Screen(val route: String) {
     object Auth : Screen("auth")
@@ -51,6 +51,18 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val uiState by authViewModel.uiState.collectAsState()
+
+    //セッションを確認して初期表示する画面を制御
+    LaunchedEffect(Unit) {
+        if(uiState.isLoggedIn) {  //ログインのセッションがあれば
+            navController.navigate(Screen.RecruitList.route)
+        } else {    //ログインのセッションがなければ
+            navController.navigate(Screen.Auth.route)
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Screen.Auth.route,
@@ -126,12 +138,36 @@ fun AppNavGraph(
                 )
             }
         }
-
+        //テスター募集一覧
         composable(Screen.RecruitList.route) {
-            RecruitListScreen()
+            val viewModel:RecruitListViewModel = hiltViewModel()
+            val recruitList by viewModel.recruitList.collectAsState()
+
+            RecruitListScreen(
+                recruitList = recruitList,
+            )
         }
+        //テスター募集新規登録
         composable(Screen.RecruitNew.route) {
-            RecruitNewScreen()
+            val viewModel: RecruitNewViewModel = hiltViewModel()
+            val uiState: RecruitUiState by viewModel.uiState.collectAsState()
+
+            RecruitNewScreen(
+                uiState = uiState,
+                navController = navController,
+                onStatusChange = { viewModel.updateUiState { copy(status = it) } },
+                onAppIconChange = { uri ->
+                    viewModel.updateUiState { copy(appIcon = uri) }
+                },
+                onAppNameChange = { viewModel.updateUiState { copy(appName = it) } },
+                onDescriptionChange = { viewModel.updateUiState { copy(description = it) } },
+                onGroupUrlChange = { viewModel.updateUiState { copy(groupUrl = it) } },
+                onAppUrlChange = { viewModel.updateUiState { copy(appUrl = it) } },
+                onWebUrlChange = { viewModel.updateUiState { copy(webUrl = it) } },
+                onSaveClick = { viewModel.saveRecruit() },
+                onClearClick = { viewModel.clear() },
+                onMsgEnd = { viewModel.onMsgEnd() },
+            )
         }
         composable(
             route = Screen.RecruitDetail.route,

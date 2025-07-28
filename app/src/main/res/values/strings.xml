@@ -35,4 +35,20 @@
     <string name="unknown_error">予期しないエラーが発生しました</string>
     <string name="user_not_found">メールアドレスが見つかりません</string>
     <string name="invalid_credentials">メールアドレスまたはパスワードが正しくありません</string>
+
+    <string name="status_open">募集中</string>
+    <string name="status_closed">募集終了</string>
+    <string name="status_released">リリース済</string>
+
+    <string name="button_recruit_add">新規投稿!!!</string>
+    <string name="button_recruit_clear">クリア</string>
+    <string name="msg_recruit_saved">投稿を保存しました🌟</string>"
+
+    <string name="lbl_recruit_status">ステータス</string>
+    <string name="lbl_recruit_app_icon">アプリアイコン</string>
+    <string name="lbl_recruit_app_name">アプリ名</string>
+    <string name="lbl_recruit_description">募集内容</string>
+    <string name="lbl_recruit_group_url">GoogleグループURL</string>
+    <string name="lbl_recruit_app_url">Androidアプリ配布URL</string>
+    <string name="lbl_recruit_web_url">Web参加URL</string>
 </resources>

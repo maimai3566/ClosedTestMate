@@ -1,6 +1,7 @@
 package com.rururi.closedtestmate.ui.anime
 
 import android.R.id.message
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -26,8 +27,8 @@ fun SlideMessage(
     onAnimationEnd: () -> Unit = {}
 ) {
     var visible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
+    Log.d("ruruS","SlideMessageのメッセージ:$message")
+    LaunchedEffect(message) {
         visible = true
         delay(2000) // Message display time
         visible = false
@@ -55,7 +56,7 @@ fun SlideMessage(
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White,
                 modifier = Modifier
-                    .background(Color.Gray)
+                    .background(Color.DarkGray)
                     .padding(16.dp)
             )
         }

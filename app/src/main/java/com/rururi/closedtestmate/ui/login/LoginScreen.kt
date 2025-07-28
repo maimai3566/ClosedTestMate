@@ -144,7 +144,7 @@ fun LoginScreen(
         //ログインしていないときだけ表示、押すと募集一覧へ遷移
         if (!isLoggedIn) {
             OutlinedButton(
-                onClick = onSkipLogin, //TODO:募集一覧へ遷移
+                onClick = onSkipLogin,
             ) {
                 Text(text = stringResource(R.string.skip_login))
             }

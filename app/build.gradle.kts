@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth.ktx)
 
+    //firestore(firebaseの中で使っていく）
+    implementation(libs.firebase.firestore.ktx)
+
     //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

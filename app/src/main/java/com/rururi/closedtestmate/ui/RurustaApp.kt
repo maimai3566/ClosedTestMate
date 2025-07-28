@@ -1,6 +1,10 @@
 package com.rururi.closedtestmate.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -36,7 +40,17 @@ fun RurustaApp() {
                 // TODO: Implement BottomBar
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            if (currentRoute == Screen.RecruitList.route) {
+                FloatingActionButton(onClick = { navController.navigate(Screen.RecruitNew.route) }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.button_recruit_add)
+                    )
+                }
+            }
+        }
     ) { innerPadding ->
         AppNavGraph(
             navController = navController,

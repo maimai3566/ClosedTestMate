@@ -156,7 +156,6 @@ fun SignupScreen(
         if (success.isNotBlank()) {
             SlideMessage(message = success)
             LaunchedEffect(success) {
-                delay(2000)
                 navController.navigate(Screen.RecruitList.route) {
                     popUpTo(Screen.Login.route) { inclusive = true }
                 }
@@ -173,44 +172,7 @@ fun SignupScreen(
     }
 }
 
-//画像UP用
-@Composable
-fun UploadImage(
-    modifier: Modifier = Modifier,
-    imageUri: Uri? = null,
-    onImageSelected: (Uri) -> Unit = {},
-){
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        onImageSelected(uri!!)
-    }
 
-    Box(
-        modifier = modifier
-            .size(dimensionResource(R.dimen.img_size))
-            .clip(CircleShape)
-            .border(2.dp, MaterialTheme.colorScheme.primary,shape = CircleShape)
-            .clickable { launcher.launch("image/*") },
-        contentAlignment = Alignment.Center,
-    ){
-        Log.d("ruruS", "imageUri: $imageUri")
-        if (imageUri == null){
-            Image(painter = painterResource(R.drawable.no_image),
-                contentDescription = "no image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            AsyncImage(
-                model = imageUri,
-                contentDescription = "アップロードした画像",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
