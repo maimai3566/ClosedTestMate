@@ -118,27 +118,22 @@ fun RecruitNewScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 //アプリアイコン
-                Box(
-                    modifier = Modifier
-                        .size(dimensionResource(R.dimen.icon_extra_large))
-                        .border(width = 1.dp, color = Color.Gray)
-                        .background(color = MaterialTheme.colorScheme.inversePrimary)
-                ) {
-                    AppIconImage(
-                        iconUri = uiState.appIcon,
-                        contentDescription = stringResource(R.string.lbl_recruit_app_icon),
-                        onImageSelected = onAppIconChange
-                    )
-                }
+                AppIconImage(
+                    iconUri = uiState.appIcon,
+                    contentDescription = stringResource(R.string.lbl_recruit_app_icon),
+                    size = R.dimen.icon_large,
+                    onImageSelected = onAppIconChange
+                )
 
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.p_medium)))
                 //アプリ名
                 OutlinedTextField(
                     value = uiState.appName,
                     onValueChange = onAppNameChange,
-                    label = { Text(stringResource(R.string.lbl_recruit_app_name)) },
+                    label = { Text(stringResource(R.string.lbl_recruit_app_name) + "*") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    isError = uiState.appName.isBlank(),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -147,21 +142,22 @@ fun RecruitNewScreen(
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = onDescriptionChange,
-                label = { Text(stringResource(R.string.lbl_recruit_description)) },
+                label = { Text(stringResource(R.string.lbl_recruit_description) + "*") },
                 singleLine = false,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                 keyboardActions = KeyboardActions(
                     onDone = { focus.requestFocus() }   //Enterキーが押されたらフォーカスを次のコンポーネントに移動
                 ),
+                isError = uiState.description.isBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
             )
-
+            //GroupURL
             OutlinedTextField(
                 value = uiState.groupUrl,
                 onValueChange = onGroupUrlChange,
-                label = { Text(stringResource(R.string.lbl_recruit_group_url)) },
+                label = { Text(stringResource(R.string.lbl_recruit_group_url) + "*") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
@@ -170,15 +166,16 @@ fun RecruitNewScreen(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
+                isError = uiState.groupUrl.isBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focus)
             )
-
+            //AppURL
             OutlinedTextField(
                 value = uiState.appUrl,
                 onValueChange = onAppUrlChange,
-                label = { Text(stringResource(R.string.lbl_recruit_app_url)) },
+                label = { Text(stringResource(R.string.lbl_recruit_app_url) + "*") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
@@ -187,6 +184,7 @@ fun RecruitNewScreen(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
+                isError = uiState.appUrl.isBlank(),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -205,8 +203,6 @@ fun RecruitNewScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
-
             Row {
                 OutlinedButton(
                     onClick = onClearClick,
@@ -215,8 +211,10 @@ fun RecruitNewScreen(
                     Text(text = stringResource(R.string.button_recruit_clear))
                 }
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.p_medium)))
+                //新規投稿
                 Button(
                     onClick = onSaveClick,
+                    enabled = uiState.isValid,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = stringResource(R.string.button_recruit_add))

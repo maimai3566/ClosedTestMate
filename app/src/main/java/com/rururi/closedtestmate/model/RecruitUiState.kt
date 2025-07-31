@@ -19,7 +19,10 @@ data class RecruitUiState(
     val webUrl: String = "",      // Web経由の参加URL（非公開フォームなど）
     val postedAt: Long = 0L,       // 投稿日時（UnixTimeミリ秒）
     val isSaved: Boolean = false    //Firestoreに保存したかどうか
-)
+) {
+    val isValid: Boolean
+        get() = appName.isNotBlank() && description.isNotBlank() && groupUrl.isNotBlank() && appUrl.isNotBlank()
+}
 
 sealed class RecruitStatus(
     @StringRes val labelResId: Int,

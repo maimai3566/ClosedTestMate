@@ -145,6 +145,7 @@ fun AppNavGraph(
 
             RecruitListScreen(
                 recruitList = recruitList,
+                onClickRecruit = { navController.navigate(Screen.RecruitDetail.createRoute(it)) }
             )
         }
         //テスター募集新規登録

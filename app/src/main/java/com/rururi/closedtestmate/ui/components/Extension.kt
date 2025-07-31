@@ -1,5 +1,6 @@
 package com.rururi.closedtestmate.ui.components
 
+import android.R.attr.description
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
@@ -23,7 +24,9 @@ fun DocumentSnapshot.toRecruitUiState(): RecruitUiState? {
         RecruitUiState(
             id = id,
             appName = getString("appName") ?: "",
-            appIcon = getString("appIcon")?.toUri() ?: Uri.EMPTY,
+            appIcon = getString("appIcon")
+                ?.takeIf { it.isNotBlank() && it !="null"}   //""でも"null"でもなければ文字列をURIに変換、それ以外はNull
+                ?.toUri(),
             status = getString("status")?.let { RecruitStatus.fromFirestoreString(it) } ?: RecruitStatus.Open,
             description = getString("description") ?: "",
             groupUrl = getString("groupUrl") ?:"",

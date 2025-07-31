@@ -1,5 +1,6 @@
 package com.rururi.closedtestmate.ui.components
 
+import android.R.attr.contentDescription
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,39 +18,52 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.rururi.closedtestmate.R
 
 @Composable
 fun AppIconImage(
     modifier: Modifier = Modifier,
     iconUri: Uri? = null,
-    onImageSelected: (Uri) -> Unit = {},
+    onImageSelected: ((Uri) -> Unit)? = null,
     contentDescription: String,
+    size: Int = R.dimen.icon_extra_large
 ) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let { onImageSelected(it) }
+        uri?.let { onImageSelected?.invoke(it) }
     }
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
-            .clickable { launcher.launch("image/*") },
+            .size(dimensionResource(size))
+            .then(
+                if (onImageSelected != null)    //nullじゃないときだけクリックできる
+                    Modifier.clickable { launcher.launch("image/*") }
+                else Modifier
+            ),
         contentAlignment = Alignment.Center
     ){
         if(iconUri == null){
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.no_icon),
                 contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize()
             )
             } else {
             AsyncImage(
-                model = iconUri,
+                model = ImageRequest.Builder(context)
+                    .data(iconUri)
+                    .crossfade(true)
+                    .allowHardware(false)
+                    .build(),
                 contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize()
             )
