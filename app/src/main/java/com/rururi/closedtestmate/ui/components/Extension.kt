@@ -3,6 +3,12 @@ package com.rururi.closedtestmate.ui.components
 import android.R.attr.description
 import android.net.Uri
 import android.util.Log
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.core.net.toUri
 import com.google.firebase.firestore.DocumentSnapshot
 import com.rururi.closedtestmate.model.RecruitStatus
@@ -37,5 +43,16 @@ fun DocumentSnapshot.toRecruitUiState(): RecruitUiState? {
     } catch (e: Exception) {
         Log.e("Extension", "RecruitUiStateに変換できないエラー：", e)
         null
+    }
+}
+
+//URLの文字列をリンクに変換
+fun String.toAnnotatedString(url:String,color: Color = Color.Blue):AnnotatedString {
+    return buildAnnotatedString {
+        pushStringAnnotation(tag = "URL", annotation = url)
+        withStyle(style = SpanStyle(color = color, textDecoration = TextDecoration.Underline)) {
+            append(this@toAnnotatedString)
+        }
+        pop()
     }
 }

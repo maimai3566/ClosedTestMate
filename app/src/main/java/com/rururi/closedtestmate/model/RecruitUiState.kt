@@ -1,5 +1,6 @@
 package com.rururi.closedtestmate.model
 
+import android.R.attr.description
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -18,7 +19,7 @@ data class RecruitUiState(
     val appUrl: String = "",      // Androidアプリ配布URL（Firebase App Distributionなど）
     val webUrl: String = "",      // Web経由の参加URL（非公開フォームなど）
     val postedAt: Long = 0L,       // 投稿日時（UnixTimeミリ秒）
-    val isSaved: Boolean = false    //Firestoreに保存したかどうか
+    val isSaved: Boolean = false,    //Firestoreに保存したかどうか
 ) {
     val isValid: Boolean
         get() = appName.isNotBlank() && description.isNotBlank() && groupUrl.isNotBlank() && appUrl.isNotBlank()

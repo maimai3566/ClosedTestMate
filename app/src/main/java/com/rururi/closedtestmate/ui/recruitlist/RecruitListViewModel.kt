@@ -22,10 +22,14 @@ class RecruitListViewModel @Inject constructor() : ViewModel() {
     private val _recruitList = MutableStateFlow<List<RecruitUiState>>(emptyList())
     val recruitList: StateFlow<List<RecruitUiState>> = _recruitList.asStateFlow()
 
+    private val _selectedRecruit = MutableStateFlow<RecruitUiState?>(null)
+    val selectedRecruit: StateFlow<RecruitUiState?> = _selectedRecruit.asStateFlow()
+
     init {
         loadRecruitList()   //インスタンスが作成されたときに１回だけ処理を実行
     }
 
+    //Firestoreから募集一覧を取得
     fun loadRecruitList() {
         Firebase.firestore.collection("recruit")        //Firestoreのrecruitコレクションにアクセス
             .orderBy("postedAt",Query.Direction.DESCENDING) //投稿日時の新しい順で並べ替え
@@ -36,5 +40,9 @@ class RecruitListViewModel @Inject constructor() : ViewModel() {
                 }
                 _recruitList.value = list               //上記リストをStateFlowに設定
             }
+    }
+    //一覧から投稿を選択
+    fun selectRecruit(recruit: RecruitUiState) {
+        _selectedRecruit.value = recruit    //選択した募集をStateFlowに設定
     }
 }

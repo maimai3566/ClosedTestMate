@@ -42,6 +42,7 @@
 
     <string name="button_recruit_add">新規投稿!!!</string>
     <string name="button_recruit_clear">クリア</string>
+    <string name="button_copy">コピー</string>
     <string name="msg_recruit_saved">投稿を保存しました🌟</string>"
 
     <string name="lbl_recruit_status">ステータス</string>

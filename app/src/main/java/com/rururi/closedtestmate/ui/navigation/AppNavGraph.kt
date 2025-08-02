@@ -29,20 +29,10 @@ import com.rururi.closedtestmate.ui.anime.SlideMessage
 import com.rururi.closedtestmate.ui.login.ForgotPasswordScreen
 import com.rururi.closedtestmate.ui.recruitnew.RecruitNewViewModel
 import androidx.core.net.toUri
+import com.rururi.closedtestmate.model.LoadState
 import com.rururi.closedtestmate.model.SaveStatus
+import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailViewModel
 import com.rururi.closedtestmate.ui.recruitlist.RecruitListViewModel
-
-sealed class Screen(val route: String) {
-    object Auth : Screen("auth")
-    object Login : Screen("login")
-    object Signup : Screen("signup")
-    object ForgotPassword : Screen("forgot_password")
-    object RecruitList : Screen("recruit_list")
-    object RecruitNew : Screen("recruit_new")
-    object RecruitDetail : Screen("recruit_detail/{recruitId}") {
-        fun createRoute(recruitId: String) = "recruit_detail/$recruitId"
-    }
-}
 
 @Composable
 fun AppNavGraph(
@@ -145,7 +135,9 @@ fun AppNavGraph(
 
             RecruitListScreen(
                 recruitList = recruitList,
-                onClickRecruit = { navController.navigate(Screen.RecruitDetail.createRoute(it)) }
+                onClickRecruit = {
+                    navController.navigate(Screen.RecruitDetail.createRoute(it))
+                }
             )
         }
         //テスター募集新規登録
@@ -170,12 +162,19 @@ fun AppNavGraph(
                 onMsgEnd = { viewModel.onMsgEnd() },
             )
         }
+        //詳細画面
         composable(
             route = Screen.RecruitDetail.route,
             arguments = listOf(navArgument("recruitId") { type = NavType.StringType })
         ) { backStackEntry ->
+            val viewModel: RecruitDetailViewModel = hiltViewModel()
+            val uiState: LoadState by viewModel.uiState.collectAsState()
             val recruitId = backStackEntry.arguments?.getString("recruitId") ?:""
-            RecruitDetailScreen(recruitId = recruitId)
+
+            RecruitDetailScreen(
+                recruitId = recruitId,
+                uiState = uiState,
+            )
         }
     }
 }
