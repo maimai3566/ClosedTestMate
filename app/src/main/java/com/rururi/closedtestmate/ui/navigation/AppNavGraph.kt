@@ -29,6 +29,7 @@ import com.rururi.closedtestmate.ui.anime.SlideMessage
 import com.rururi.closedtestmate.ui.login.ForgotPasswordScreen
 import com.rururi.closedtestmate.ui.recruitnew.RecruitNewViewModel
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rururi.closedtestmate.model.LoadState
 import com.rururi.closedtestmate.model.SaveStatus
 import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailViewModel
@@ -142,25 +143,29 @@ fun AppNavGraph(
         }
         //テスター募集新規登録
         composable(Screen.RecruitNew.route) {
-            val viewModel: RecruitNewViewModel = hiltViewModel()
-            val uiState: RecruitUiState by viewModel.uiState.collectAsState()
-
             RecruitNewScreen(
-                uiState = uiState,
                 navController = navController,
-                onStatusChange = { viewModel.updateUiState { copy(status = it) } },
-                onAppIconChange = { uri ->
-                    viewModel.updateUiState { copy(appIcon = uri) }
-                },
-                onAppNameChange = { viewModel.updateUiState { copy(appName = it) } },
-                onDescriptionChange = { viewModel.updateUiState { copy(description = it) } },
-                onGroupUrlChange = { viewModel.updateUiState { copy(groupUrl = it) } },
-                onAppUrlChange = { viewModel.updateUiState { copy(appUrl = it) } },
-                onWebUrlChange = { viewModel.updateUiState { copy(webUrl = it) } },
-                onSaveClick = { viewModel.saveRecruit() },
-                onClearClick = { viewModel.clear() },
-                onMsgEnd = { viewModel.onMsgEnd() },
+                viewModel = hiltViewModel()
             )
+//            val viewModel: RecruitNewViewModel = hiltViewModel()
+//            val uiState: RecruitUiState by viewModel.uiState.collectAsState()
+//
+//            RecruitNewScreen(
+//                uiState = uiState,
+//                navController = navController,
+//                onStatusChange = { viewModel.updateUiState { copy(status = it) } },
+//                onAppIconChange = { uri ->
+//                    viewModel.updateUiState { copy(appIcon = uri) }
+//                },
+//                onAppNameChange = { viewModel.updateUiState { copy(appName = it) } },
+//                onDetailChange = { viewModel.updateDetailText() },  //todo:後で修正
+//                onGroupUrlChange = { viewModel.updateUiState { copy(groupUrl = it) } },
+//                onAppUrlChange = { viewModel.updateUiState { copy(appUrl = it) } },
+//                onWebUrlChange = { viewModel.updateUiState { copy(webUrl = it) } },
+//                onSaveClick = { viewModel.saveRecruit() },
+//                onClearClick = { viewModel.clear() },
+//                onMsgEnd = { viewModel.onMsgEnd() },
+//            )
         }
         //詳細画面
         composable(

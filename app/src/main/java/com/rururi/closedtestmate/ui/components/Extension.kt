@@ -1,6 +1,7 @@
 package com.rururi.closedtestmate.ui.components
 
 import android.R.attr.description
+import android.R.attr.text
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.Color
@@ -11,17 +12,44 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.core.net.toUri
 import com.google.firebase.firestore.DocumentSnapshot
+import com.rururi.closedtestmate.model.DetailContent
 import com.rururi.closedtestmate.model.RecruitStatus
 import com.rururi.closedtestmate.model.RecruitUiState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 //Long型の日付変換
 fun Long.formatDate():String {
     val date = Date(this)   //Long型の日付をDate型に変換
     val format = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())    //フォーマット指定
     return format.format(date)  //output
+}
+
+//DetailContentをMap（Firestore対応）に変換する拡張関数
+fun DetailContent.toMap(): Map<String, String> {
+    return when (this) {
+        is DetailContent.Text -> mapOf("type" to "text", "id" to id, "text" to text)
+        is DetailContent.Image -> mapOf("type" to "image", "id" to id, "uri" to uri.toString())
+    }
+}
+
+//MapをDetailContentに変換する拡張関数
+fun Map<*,*>.toDetailContent(): DetailContent? {
+    val type = this["type"] as? String ?: return null
+    val id = this["id"] as? String ?: UUID.randomUUID().toString()
+    return when (type) {
+        "text" -> {
+            val text = this["text"] as? String ?: return null
+            DetailContent.Text(id,text)
+        }
+        "image" -> {
+            val uri = this["uri"] as? String ?: return null
+            DetailContent.Image(id,uri.toUri())
+        }
+        else -> null
+    }
 }
 
 //Firestoreから読み込んだデータをRecruitUiStateに変換する拡張関数
@@ -34,7 +62,9 @@ fun DocumentSnapshot.toRecruitUiState(): RecruitUiState? {
                 ?.takeIf { it.isNotBlank() && it !="null"}   //""でも"null"でもなければ文字列をURIに変換、それ以外はNull
                 ?.toUri(),
             status = getString("status")?.let { RecruitStatus.fromFirestoreString(it) } ?: RecruitStatus.Open,
-            description = getString("description") ?: "",
+            details = (get("details") as? List<*>)  //Firestoreのdetailsは配列型だけど中身はわからないのでList<*>
+                ?.mapNotNull { (it as? Map<*, *>)?.toDetailContent() }  //Map<*,*>型にキャストできるか確認してからDetailContentに変換
+                ?: emptyList(), //変換に失敗したら空のリストにする
             groupUrl = getString("groupUrl") ?:"",
             appUrl = getString("appUrl") ?:"",
             webUrl = getString("webUrl") ?:"",
@@ -44,6 +74,13 @@ fun DocumentSnapshot.toRecruitUiState(): RecruitUiState? {
         Log.e("Extension", "RecruitUiStateに変換できないエラー：", e)
         null
     }
+}
+
+//ステータスを文字列に変換する関数
+fun RecruitStatus.toFirestoreString(): String = when (this) {
+    RecruitStatus.Open -> "募集中"
+    RecruitStatus.Closed -> "募集終了"
+    RecruitStatus.Released -> "リリース済"
 }
 
 //URLの文字列をリンクに変換
@@ -56,3 +93,4 @@ fun String.toAnnotatedString(url:String,color: Color = Color.Blue):AnnotatedStri
         pop()
     }
 }
+

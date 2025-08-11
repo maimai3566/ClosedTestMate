@@ -93,11 +93,11 @@ fun SuccessScreen(
             }
         }
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
-        Text(text = "■ ${stringResource(R.string.lbl_recruit_description)}")
-        Text(
-            text = uiState.description,
-            modifier = Modifier.padding(start = dimensionResource(R.dimen.p_medium))
-        )
+        Text(text = "■ ${stringResource(R.string.lbl_recruit_details)}")
+//        Text(
+//            text = uiState.description,
+//            modifier = Modifier.padding(start = dimensionResource(R.dimen.p_medium))
+//        )
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         TitleUrl(title = stringResource(R.string.lbl_recruit_group_url), url = uiState.groupUrl)
         TitleUrl(title = stringResource(R.string.lbl_recruit_app_url), url = uiState.appUrl)
@@ -114,7 +114,7 @@ fun RecruitDetailScreenPreview() {
             appName = "テストアプリ",
             status = RecruitStatus.Open,
             postedAt = System.currentTimeMillis(),
-            description = "テスト説明",
+//            description = "テスト説明",
             groupUrl = "テストグループURL",
             appUrl = "テストアプリURL",
             webUrl = "テストWEBURL"

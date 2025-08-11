@@ -1,7 +1,11 @@
 package com.rururi.closedtestmate.ui.recruitnew
 
+import android.R.attr.label
+import android.R.attr.singleLine
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,35 +53,31 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rururi.closedtestmate.R
+import com.rururi.closedtestmate.model.DetailContent
 import com.rururi.closedtestmate.model.RecruitStatus
 import com.rururi.closedtestmate.model.RecruitUiState
 import com.rururi.closedtestmate.model.SaveStatus
 import com.rururi.closedtestmate.ui.anime.SlideMessage
 import com.rururi.closedtestmate.ui.components.AppIconImage
+import com.rururi.closedtestmate.ui.components.Edita
+import com.rururi.closedtestmate.ui.components.EditaLayout
 import com.rururi.closedtestmate.ui.navigation.Screen
 import kotlinx.coroutines.delay
 
 @Composable
 fun RecruitNewScreen(
     modifier: Modifier = Modifier,
-    uiState: RecruitUiState,
     navController: NavController = rememberNavController(),
-    onStatusChange: (RecruitStatus) -> Unit = {},
-    onAppIconChange: (Uri) -> Unit = {},
-    onAppNameChange: (String) -> Unit = {},
-    onDescriptionChange: (String) -> Unit = {},
-    onGroupUrlChange: (String) -> Unit = {},
-    onAppUrlChange: (String) -> Unit = {},
-    onWebUrlChange: (String) -> Unit = {},
-    onSaveClick: () -> Unit = {},
-    onClearClick: () -> Unit = {},
-    onMsgEnd: () -> Unit = {},
+    viewModel: RecruitNewViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val focus = remember { FocusRequester() }   //フォーカスが当たっているコンポーネント
     val focusManager = LocalFocusManager.current
+
     var isStatusMenuExpanded by remember { mutableStateOf(false) }  //ドロップダウンの表示状態
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -105,8 +106,7 @@ fun RecruitNewScreen(
                     recruitStatusList.forEach { status ->
                         DropdownMenuItem(
                             text = { Text(stringResource(id = status.labelResId)) },
-                            onClick = {
-                                onStatusChange(status)
+                            onClick = { viewModel.updateUiState { copy(status = status) }
                                 isStatusMenuExpanded = false
                             }
                         )
@@ -122,14 +122,14 @@ fun RecruitNewScreen(
                     iconUri = uiState.appIcon,
                     contentDescription = stringResource(R.string.lbl_recruit_app_icon),
                     size = R.dimen.icon_large,
-                    onImageSelected = onAppIconChange
+                    onImageSelected = { viewModel.updateUiState { copy(appIcon = it) } }
                 )
 
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.p_medium)))
                 //アプリ名
                 OutlinedTextField(
                     value = uiState.appName,
-                    onValueChange = onAppNameChange,
+                    onValueChange = { viewModel.updateUiState { copy(appName = it) } },
                     label = { Text(stringResource(R.string.lbl_recruit_app_name) + "*") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -138,25 +138,27 @@ fun RecruitNewScreen(
                 )
             }
 
-            //募集内容
-            OutlinedTextField(
-                value = uiState.description,
-                onValueChange = onDescriptionChange,
-                label = { Text(stringResource(R.string.lbl_recruit_description) + "*") },
-                singleLine = false,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
-                keyboardActions = KeyboardActions(
-                    onDone = { focus.requestFocus() }   //Enterキーが押されたらフォーカスを次のコンポーネントに移動
-                ),
-                isError = uiState.description.isBlank(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
+            /**－－－－－－－募集内容－－－－－－－**/
+            //画像選択
+            val pickImage = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                if(uri != null) viewModel.addDetailImage(uri)   //detailsの最後に画像を追加
+            }
+            Edita(
+                items = uiState.details,
+                editaTitle = stringResource(R.string.lbl_recruit_details),
+                onValueChange = viewModel::updateDetailText ,   //(id,value) -> Unit
+                onAddText = { viewModel.addDetailText() },      //Textフィールドを追加
+                onAddImage = { pickImage.launch("image/*") },   //イメージを追加
+                onRemove = { viewModel.removeById(it) },        //選択したものを削除
+                layout = EditaLayout.BottomBar,
             )
+
             //GroupURL
             OutlinedTextField(
                 value = uiState.groupUrl,
-                onValueChange = onGroupUrlChange,
+                onValueChange = { viewModel.updateUiState { copy(groupUrl = it) } },
                 label = { Text(stringResource(R.string.lbl_recruit_group_url) + "*") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -174,7 +176,7 @@ fun RecruitNewScreen(
             //AppURL
             OutlinedTextField(
                 value = uiState.appUrl,
-                onValueChange = onAppUrlChange,
+                onValueChange = { viewModel.updateUiState { copy(appUrl = it) } },
                 label = { Text(stringResource(R.string.lbl_recruit_app_url) + "*") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -190,7 +192,7 @@ fun RecruitNewScreen(
 
             OutlinedTextField(
                 value = uiState.webUrl,
-                onValueChange = onWebUrlChange,
+                onValueChange = { viewModel.updateUiState { copy(webUrl = it) } },
                 label = { Text(stringResource(R.string.lbl_recruit_web_url)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -205,7 +207,7 @@ fun RecruitNewScreen(
 
             Row {
                 OutlinedButton(
-                    onClick = onClearClick,
+                    onClick = { viewModel.clear() },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = stringResource(R.string.button_recruit_clear))
@@ -213,7 +215,7 @@ fun RecruitNewScreen(
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.p_medium)))
                 //新規投稿
                 Button(
-                    onClick = onSaveClick,
+                    onClick = { viewModel.saveRecruit() },
                     enabled = uiState.isValid,
                     modifier = Modifier.weight(1f)
                 ) {
@@ -226,9 +228,9 @@ fun RecruitNewScreen(
             SlideMessage(
                 message = stringResource(R.string.msg_recruit_saved),
                 onAnimationEnd = {
-                    onMsgEnd() //アニメが終わったらisSavedをfalseに戻す
+                    viewModel.onMsgEnd() //アニメが終わったらisSavedをfalseに戻す
                     navController.navigate(Screen.RecruitList.route) //アニメが終わってから画面遷移
-                    onClearClick() //入力値クリア
+                    viewModel.clear() //入力値クリア
                 }
             )
         }
@@ -238,5 +240,5 @@ fun RecruitNewScreen(
 @Preview(showBackground = true)
 @Composable
 fun RecruitNewScreenPreview() {
-    RecruitNewScreen(uiState = RecruitUiState())
+    RecruitNewScreen()
 }

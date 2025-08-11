@@ -14,6 +14,8 @@
     <dimen name="space_large">120dp</dimen>
     <dimen name="avatar_width">120dp</dimen>
     <dimen name="avatar_height">180dp</dimen>
+
+    <dimen name="icon_extra_small">24dp</dimen>
     <dimen name="icon_small">36dp</dimen>
     <dimen name="icon_medium">48dp</dimen>
     <dimen name="icon_large">64dp</dimen>
@@ -23,6 +25,8 @@
     <dimen name="dot_large">30dp</dimen>
     <dimen name="dot_small">20dp</dimen>
     <dimen name="detail_size">36dp</dimen>
+    <dimen name="edita_min_height">120dp</dimen>
+    <dimen name="edita_max_height">240dp</dimen>
 
     <dimen name="toast_pos_y">400dp</dimen>
 </resources>

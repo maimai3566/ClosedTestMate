@@ -48,8 +48,10 @@
     <string name="lbl_recruit_status">ステータス</string>
     <string name="lbl_recruit_app_icon">アプリアイコン</string>
     <string name="lbl_recruit_app_name">アプリ名</string>
-    <string name="lbl_recruit_description">募集内容</string>
+    <string name="lbl_recruit_details">募集内容</string>
     <string name="lbl_recruit_group_url">GoogleグループURL</string>
     <string name="lbl_recruit_app_url">Androidアプリ配布URL</string>
     <string name="lbl_recruit_web_url">Web参加URL</string>
+    <string name="icon_image">画像を追加</string>
+    <string name="icon_text">文章を追加</string>
 </resources>
