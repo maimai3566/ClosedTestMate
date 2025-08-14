@@ -52,12 +52,7 @@ fun LoginScreen(
     onSkipLogin: () -> Unit = {},
     uiState: UserProfileUiState,
 ){
-    val email = uiState.email
-    val password = uiState.pw
-    val isLoggedIn = uiState.isLoggedIn
-
     val keyboardController = LocalSoftwareKeyboardController.current    //キーボード
-
     var pwVisible by remember { mutableStateOf(false) } //パスワード表示有無
 
     LaunchedEffect(Unit) { onMessageReset() }
@@ -74,7 +69,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
         //email
         OutlinedTextField(
-            value = email,
+            value = uiState.email,
             onValueChange = onEmailChange,
             label = { Text(text = stringResource(R.string.email) + "*") },
             singleLine = true,
@@ -83,7 +78,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         //PW
         OutlinedTextField(
-            value = password,
+            value = uiState.pw,
             onValueChange = onPasswordChange,
             label = { Text(text = stringResource(R.string.pw) + "*") },
             singleLine = true,
@@ -104,7 +99,7 @@ fun LoginScreen(
                 keyboardController?.hide()  //キーボードを閉じる
                 onLogin()     //ログイン処理
             },
-            enabled = email.isNotBlank() && password.isNotBlank()
+            enabled = uiState.email.isNotBlank() && uiState.pw.isNotBlank()
         ) {
             Text(text = stringResource(R.string.login))
         }
@@ -141,15 +136,12 @@ fun LoginScreen(
         }
 
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
-        //ログインしていないときだけ表示、押すと募集一覧へ遷移
-        if (!isLoggedIn) {
-            OutlinedButton(
-                onClick = onSkipLogin,
-            ) {
-                Text(text = stringResource(R.string.skip_login))
-            }
+        //ログインしないで続ける
+        OutlinedButton(
+            onClick = onSkipLogin,
+        ) {
+            Text(text = stringResource(R.string.skip_login))
         }
-
     }
 }
 

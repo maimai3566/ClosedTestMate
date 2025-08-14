@@ -33,7 +33,7 @@ fun SlideMessage(
         delay(2000) // Message display time
         visible = false
         delay(500) // Animation duration
-        onAnimationEnd()
+        onAnimationEnd()    //アニメーションが終わった時の処理
     }
 
     Box(

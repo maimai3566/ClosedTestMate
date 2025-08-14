@@ -5,9 +5,11 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.common.collect.Multimaps.index
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.ktx.firestore
+import com.rururi.closedtestmate.data.AuthRepository
 import com.rururi.closedtestmate.model.DetailContent
 import com.rururi.closedtestmate.model.RecruitStatus
 import com.rururi.closedtestmate.model.RecruitUiState
@@ -17,10 +19,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecruitNewViewModel @Inject constructor() : ViewModel() {
+class RecruitNewViewModel @Inject constructor(
+    private val auth: AuthRepository
+) : ViewModel() {
     //投稿状態の保持
     private val _uiState = MutableStateFlow(RecruitUiState(details = listOf(DetailContent.Text())))
     val uiState: StateFlow<RecruitUiState> = _uiState.asStateFlow()
@@ -28,6 +33,19 @@ class RecruitNewViewModel @Inject constructor() : ViewModel() {
     //初期化
     init {
         initDetails()
+        viewModelScope.launch {
+            auth.currentUserFlow.collect { user ->
+                _uiState.update { state ->
+                    if(state.authorId.isBlank())
+                        state.copy(
+                            authorId = user?.uid ?: "",
+                            authorName = user?.name ?: "",
+                            authorIcon = user?.photoUrl
+                        )
+                    else state
+                }
+            }
+        }
     }
 
     //汎用の更新関数
@@ -46,7 +64,10 @@ class RecruitNewViewModel @Inject constructor() : ViewModel() {
             "groupUrl" to uiState.value.groupUrl,
             "appUrl" to uiState.value.appUrl,
             "webUrl" to uiState.value.webUrl,
-            "postedAt" to System.currentTimeMillis()
+            "postedAt" to System.currentTimeMillis(),
+            "authorId" to uiState.value.authorId,
+            "authorName" to uiState.value.authorName,
+            "authorIcon" to (uiState.value.authorIcon?.toString() ?: "")    //Uriを文字列に変換
         )
         Log.d("ruruV","Firestoreに保存します:$recruitData")
         Firebase.firestore.collection("recruit")
@@ -77,7 +98,7 @@ class RecruitNewViewModel @Inject constructor() : ViewModel() {
                 groupUrl = "",
                 appUrl = "",
                 webUrl = "",
-                isSaved = false
+                isSaved = false,
             )
         }
     }
@@ -85,7 +106,7 @@ class RecruitNewViewModel @Inject constructor() : ViewModel() {
     /**－－－－－details　API　ここから！－－－－－**/
     //EmptyListを許さないための処理
     private fun nonEmptyDetails(list: List<DetailContent>): List<DetailContent> =
-        if(list.isEmpty()) listOf(DetailContent.Text()) else list
+        list.ifEmpty { listOf(DetailContent.Text()) }
 
     //初期化
     fun initDetails() {

@@ -27,6 +27,8 @@
     <string name="show_pw">パスワードを見せる</string>"
 
     <string name="msg_login_error">ログインできませんでした。</string>
+    <string name="msg_login_success">ログインしました！</string>
+    <string name="msg_login_required">投稿はログインしてからね🙇‍♀️</string>
     <string name="invalid_email_address">メールアドレスの形式が正しくありません</string>
     <string name="email_already_in_use">このメールアドレスはすでに登録済みです</string>
     <string name="password_should_be_at_least_6_characters">パスワードは6文字以上で設定してください</string>

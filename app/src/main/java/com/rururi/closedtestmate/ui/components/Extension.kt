@@ -69,11 +69,33 @@ fun DocumentSnapshot.toRecruitUiState(): RecruitUiState? {
             appUrl = getString("appUrl") ?:"",
             webUrl = getString("webUrl") ?:"",
             postedAt = getLong("postedAt") ?: 0L,
+            authorId = getString("authorId") ?:"",
+            authorName = getString("authorName") ?:"",
+            authorIcon = getString("authorIcon")
+                ?.takeIf { it.isNotBlank() && it !="null"}  //ブランクでもnullでもなければ文字列をURIに変換、それ以外はnull
+                ?.toUri()
         )
     } catch (e: Exception) {
         Log.e("Extension", "RecruitUiStateに変換できないエラー：", e)
         null
     }
+}
+
+//ステータスをFirestoreの文字列に変換する拡張関数
+fun RecruitUiState.toMap(): Map<String, Any> {
+    return mapOf(
+        "appName" to appName,
+        "appIcon" to appIcon.toString(),
+        "status" to status.toFirestoreString(),
+        "details" to details.map { it.toMap() },
+        "groupUrl" to groupUrl,
+        "appUrl" to appUrl,
+        "webUrl" to webUrl,
+        "postedAt" to postedAt,
+        "authorId" to authorId,
+        "authorName" to authorName,
+        "authorIcon" to authorIcon.toString()
+    )
 }
 
 //ステータスを文字列に変換する関数

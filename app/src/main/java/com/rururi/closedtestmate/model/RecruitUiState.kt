@@ -20,6 +20,10 @@ data class RecruitUiState(
     val webUrl: String = "",      // Web経由の参加URL（非公開フォームなど）
     val postedAt: Long = 0L,       // 投稿日時（UnixTimeミリ秒）
     val isSaved: Boolean = false,    //Firestoreに保存したかどうか
+
+    val authorId: String = "",     //投稿したユーザーID
+    val authorName: String = "",   //投稿したユーザー名
+    val authorIcon: Uri? = null,   //投稿したユーザーアイコン（URI型）
 ) {
     val isValid: Boolean
         get() = appName.isNotBlank() && details.isNotEmpty() && groupUrl.isNotBlank() && appUrl.isNotBlank()

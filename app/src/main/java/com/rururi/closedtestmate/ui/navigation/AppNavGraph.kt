@@ -1,5 +1,6 @@
 package com.rururi.closedtestmate.ui.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,53 +36,61 @@ import com.rururi.closedtestmate.model.SaveStatus
 import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailViewModel
 import com.rururi.closedtestmate.ui.recruitlist.RecruitListViewModel
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
+    isLoggedIn: Boolean,    //受け取るだけ
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val authViewModel: AuthViewModel = hiltViewModel()
-    val uiState by authViewModel.uiState.collectAsState()
-
-    //セッションを確認して初期表示する画面を制御
-    LaunchedEffect(Unit) {
-        if(uiState.isLoggedIn) {  //ログインのセッションがあれば
-            navController.navigate(Screen.RecruitList.route)
-        } else {    //ログインのセッションがなければ
-            navController.navigate(Screen.Auth.route)
-        }
-    }
+    //初期画面(ログインしていれば募集一覧、ログインしていなければログイン)
+    val startDest = if (isLoggedIn) Screen.RecruitList.route else Screen.Auth.route
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Auth.route,
+        startDestination = startDest,
+        route = "root",     //navHostの名前
         modifier = modifier
     ) {
+        //認証ルート
         navigation(
-            route = Screen.Auth.route,
+            route = Screen.Auth.route,  //navigationの名前
             startDestination = Screen.Login.route
         ) {
-
             //ログイン
             composable(Screen.Login.route) { backStackEntry ->
+                //Login用VM
                 val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Screen.Auth.route) }
                 val viewModel:LoginViewModel = hiltViewModel(parentEntry)
                 val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(uiState.success) {
+                    if(uiState.success.isNotBlank()) {
+                        //リダイレクト用
+                        val redirect = navController.previousBackStackEntry
+                            ?.savedStateHandle          //リダイレクト先が保存されていれば
+                            ?.get<String>("redirect")   //保存した先に飛ぶ
+                            ?: Screen.RecruitList.route //リダイレクト先がnullなら募集一覧に飛ぶ
+
+                        navController.previousBackStackEntry    //一度使ったバックスタックエントリは
+                            ?.savedStateHandle
+                            ?.remove<String>("redirect")    //消す
+                        navController.navigate(redirect) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                        //successを消す
+                        viewModel.updateUiState { copy(success = "") }
+                    }
+                }
 
                 LoginScreen(
                     uiState = uiState,
                     onMessageReset = { viewModel.updateUiState { copy(success = "", error = "") }},
                     onEmailChange = { viewModel.updateUiState { copy(email = it) } },
                     onPasswordChange = { viewModel.updateUiState { copy(pw = it) } },
-                    onLogin = {
-                        viewModel.login(
-                            onSuccess = {
-                                navController.navigate(Screen.RecruitList.route)
-                            },
-                        )
-                    },
+                    onLogin = { viewModel.login() },    //ログイン処理
                     onForgotPw = {
                         viewModel.resetUiState()    //状態をリセットする
                         navController.navigate(Screen.ForgotPassword.route)
@@ -129,6 +138,7 @@ fun AppNavGraph(
                 )
             }
         }
+
         //テスター募集一覧
         composable(Screen.RecruitList.route) {
             val viewModel:RecruitListViewModel = hiltViewModel()

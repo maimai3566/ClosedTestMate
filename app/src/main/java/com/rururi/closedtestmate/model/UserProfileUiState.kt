@@ -10,7 +10,7 @@ data class UserProfileUiState(
     val error: String = "",     //エラーメッセージ
     val success: String = "",   //成功メッセージ
     val hasRegistered: Boolean = false,   //登録済みかどうか
-    val isLoggedIn: Boolean = false,   //ログイン中かどうか
+//    val isLoggedIn: Boolean = false,   //ログイン中かどうか
     val isAnonymous: Boolean = false,   //匿名かどうか
     val isLoading: Boolean = false,   //ローディング中かどうか
 )

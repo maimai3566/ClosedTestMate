@@ -38,7 +38,6 @@ class LoginViewModel @Inject constructor(
     fun resetUiState() {
         _uiState.update {
             it.copy(
-                isLoggedIn = false,
                 error = "",
                 success = "",
                 email = "",
@@ -95,7 +94,6 @@ class LoginViewModel @Inject constructor(
                     it.copy(
                         userId = user?.uid ?: "",
                         email = user?.email ?: "",
-                        isLoggedIn = true,
                         isLoading = false,
                         success = context.getString(R.string.signup_success),
                         error = ""
@@ -118,7 +116,7 @@ class LoginViewModel @Inject constructor(
     }
 
     //ログイン
-    fun login(onSuccess:()->Unit) {
+    fun login() {
         val email = _uiState.value.email
         val password = _uiState.value.pw
 
@@ -132,12 +130,12 @@ class LoginViewModel @Inject constructor(
                         email = user?.email ?: "",
                         photoUrl = user?.photoUrl?.toString() ?: "",
                         isAnonymous = user?.isAnonymous ?: false,
-                        isLoggedIn = true,
                         isLoading = false,
-                        error = ""
+                        error = "",
+                        success = context.getString(R.string.msg_login_success)
                     )
                 }
-                onSuccess()
+//                onSuccess()
             }
             .addOnFailureListener { exception ->
                 val code =  when {
@@ -153,6 +151,7 @@ class LoginViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         error = errorMsg,
+                        success = "",
                         isLoading = false,
                     )
                 }
