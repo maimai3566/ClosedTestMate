@@ -1,10 +1,8 @@
-package com.rururi.closedtestmate.ui.login
+package com.rururi.closedtestmate.auth.login
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.google.android.play.integrity.internal.u
 import com.rururi.closedtestmate.model.UserProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +15,12 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.rururi.closedtestmate.R
+import com.rururi.closedtestmate.auth.common.AuthError
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class LoginViewModel_bu @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UserProfileUiState())
@@ -116,46 +115,46 @@ class LoginViewModel @Inject constructor(
     }
 
     //ログイン
-    fun login() {
-        val email = _uiState.value.email
-        val password = _uiState.value.pw
-
-        auth.signInWithEmailAndPassword(email, password)    //メールとPWでログイン
-            .addOnSuccessListener {
-                val user = auth.currentUser
-                _uiState.update {
-                    it.copy(
-                        userId = user?.uid ?: "",
-                        name = user?.displayName ?: "",
-                        email = user?.email ?: "",
-                        photoUrl = user?.photoUrl?.toString() ?: "",
-                        isAnonymous = user?.isAnonymous ?: false,
-                        isLoading = false,
-                        error = "",
-                        success = context.getString(R.string.msg_login_success)
-                    )
-                }
-//                onSuccess()
-            }
-            .addOnFailureListener { exception ->
-                val code =  when {
-                    exception is FirebaseAuthInvalidUserException -> exception.errorCode
-                    exception is FirebaseAuthInvalidCredentialsException -> exception.errorCode
-                    exception is FirebaseAuthUserCollisionException -> exception.errorCode
-                    exception is FirebaseAuthException -> exception.errorCode
-                    else -> null
-                }
-                val authError = AuthError.fromException(code ?: "")
-                val errorMsg = context.getString(authError.resId)
-                Log.d("ruruV", "era-: $code")
-                _uiState.update {
-                    it.copy(
-                        error = errorMsg,
-                        success = "",
-                        isLoading = false,
-                    )
-                }
-            }
-    }
+//    fun login() {
+//        val email = _uiState.value.email
+//        val password = _uiState.value.pw
+//
+//        auth.signInWithEmailAndPassword(email, password)    //メールとPWでログイン
+//            .addOnSuccessListener {
+//                val user = auth.currentUser
+//                _uiState.update {
+//                    it.copy(
+//                        userId = user?.uid ?: "",
+//                        name = user?.displayName ?: "",
+//                        email = user?.email ?: "",
+//                        photoUrl = user?.photoUrl?.toString() ?: "",
+//                        isAnonymous = user?.isAnonymous ?: false,
+//                        isLoading = false,
+//                        error = "",
+//                        success = context.getString(R.string.msg_login_success)
+//                    )
+//                }
+////                onSuccess()
+//            }
+//            .addOnFailureListener { exception ->
+//                val code =  when {
+//                    exception is FirebaseAuthInvalidUserException -> exception.errorCode
+//                    exception is FirebaseAuthInvalidCredentialsException -> exception.errorCode
+//                    exception is FirebaseAuthUserCollisionException -> exception.errorCode
+//                    exception is FirebaseAuthException -> exception.errorCode
+//                    else -> null
+//                }
+//                val authError = AuthError.fromException(code ?: "")
+//                val errorMsg = context.getString(authError.resId)
+//                Log.d("ruruV", "era-: $code")
+//                _uiState.update {
+//                    it.copy(
+//                        error = errorMsg,
+//                        success = "",
+//                        isLoading = false,
+//                    )
+//                }
+//            }
+//    }
 }
 

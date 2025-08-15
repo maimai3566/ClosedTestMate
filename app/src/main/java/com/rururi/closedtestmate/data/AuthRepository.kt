@@ -8,4 +8,6 @@ interface AuthRepository {
     fun currentUser(): UserSession?            //単発で取得したいとき
     //監視をvalとしているのはずっと同じインスタンスだから
     //単発がfunなのは、呼び出すたびに最新を取得しに行くから
+
+    fun signOut()
 }

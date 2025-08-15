@@ -12,27 +12,18 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.rururi.closedtestmate.ui.TabListViewModel
-import com.rururi.closedtestmate.ui.login.LoginScreen
-import com.rururi.closedtestmate.ui.login.LoginViewModel
+import com.rururi.closedtestmate.auth.login.LoginScreen
 import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailScreen
 import com.rururi.closedtestmate.ui.recruitlist.RecruitListScreen
 import com.rururi.closedtestmate.ui.recruitnew.RecruitNewScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import com.rururi.closedtestmate.ui.login.SignupScreen
-import androidx.navigation.compose.navigation
-import com.google.firebase.auth.FirebaseAuth
-import com.rururi.closedtestmate.R
-import com.rururi.closedtestmate.model.RecruitUiState
-import com.rururi.closedtestmate.ui.anime.SlideMessage
-import com.rururi.closedtestmate.ui.login.ForgotPasswordScreen
-import com.rururi.closedtestmate.ui.recruitnew.RecruitNewViewModel
-import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rururi.closedtestmate.auth.sighnup.SignupScreen
+import androidx.navigation.compose.navigation
+import com.rururi.closedtestmate.auth.forgot.ForgotPasswordScreen
+import com.rururi.closedtestmate.auth.login.LoginViewModel
 import com.rururi.closedtestmate.model.LoadState
-import com.rururi.closedtestmate.model.SaveStatus
 import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailViewModel
 import com.rururi.closedtestmate.ui.recruitlist.RecruitListViewModel
 
@@ -50,7 +41,6 @@ fun AppNavGraph(
     NavHost(
         navController = navController,
         startDestination = startDest,
-        route = "root",     //navHostの名前
         modifier = modifier
     ) {
         //認証ルート
@@ -60,13 +50,11 @@ fun AppNavGraph(
         ) {
             //ログイン
             composable(Screen.Login.route) { backStackEntry ->
-                //Login用VM
-                val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Screen.Auth.route) }
-                val viewModel:LoginViewModel = hiltViewModel(parentEntry)
-                val uiState by viewModel.uiState.collectAsState()
+                val LoginVM = hiltViewModel<LoginViewModel>()
+                val uiState by LoginVM.uiState.collectAsState()
 
                 LaunchedEffect(uiState.success) {
-                    if(uiState.success.isNotBlank()) {
+                    if(uiState.success) {
                         //リダイレクト用
                         val redirect = navController.previousBackStackEntry
                             ?.savedStateHandle          //リダイレクト先が保存されていれば
@@ -80,62 +68,61 @@ fun AppNavGraph(
                             popUpTo(Screen.Login.route) { inclusive = true }
                             launchSingleTop = true
                         }
-                        //successを消す
-                        viewModel.updateUiState { copy(success = "") }
+                        //successをfalseにしておく
+                        LoginVM.updateUiState { copy(success = false) }
                     }
                 }
 
+                //login画面表示
                 LoginScreen(
                     uiState = uiState,
-                    onMessageReset = { viewModel.updateUiState { copy(success = "", error = "") }},
-                    onEmailChange = { viewModel.updateUiState { copy(email = it) } },
-                    onPasswordChange = { viewModel.updateUiState { copy(pw = it) } },
-                    onLogin = { viewModel.login() },    //ログイン処理
-                    onForgotPw = {
-                        viewModel.resetUiState()    //状態をリセットする
-                        navController.navigate(Screen.ForgotPassword.route)
-                    },
-                    onSignup = {
-                        viewModel.resetUiState()    //状態をリセットする
-                        navController.navigate(Screen.Signup.route)
-                    },
-                    onSkipLogin = { navController.navigate(Screen.RecruitList.route) }  //そのまま募集一覧へ
+                    onEmailChange = { LoginVM.updateUiState{ copy(email = it) } },
+                    onPasswordChange = { LoginVM.updateUiState { copy(pw = it) } },
+                    onLogin = { LoginVM.login(uiState.email, uiState.pw) },
+                    onForgotPw = { navController.navigate(Screen.ForgotPassword.route) },
+                    onSignUp = { navController.navigate(Screen.Signup.route) },
+                    onSkipLogin = {
+                        navController.navigate(Screen.RecruitList.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
                 )
             }
             //サインアップ
             composable(Screen.Signup.route){ backStackEntry ->
-                val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Screen.Auth.route) }
-                val viewModel:LoginViewModel = hiltViewModel(parentEntry)
-                val uiState by viewModel.uiState.collectAsState()
-
-                SignupScreen(
-                    navController = navController,
-                    onMessageReset = { viewModel.updateUiState { copy(success = "", error = "") }},
-                    onEmailChange = { viewModel.updateUiState { copy(email = it) } },
-                    onPasswordChange = { viewModel.updateUiState { copy(pw = it) } },
-                    onConfirmPasswordChange = { viewModel.updateUiState { copy(pw2 = it) } },
-                    onSignUpClick = { viewModel.signUp(onSuccess = {}) },
-                    snackbarHostState = snackbarHostState,
-                    uiState = uiState
-                )
+//                val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Screen.Auth.route) }
+//                val viewModel:LoginViewModel_bu = hiltViewModel(parentEntry)
+//                val uiState by viewModel.uiState.collectAsState()
+//
+//                SignupScreen(
+//                    navController = navController,
+//                    onMessageReset = { viewModel.updateUiState { copy(success = "", error = "") }},
+//                    onEmailChange = { viewModel.updateUiState { copy(email = it) } },
+//                    onPasswordChange = { viewModel.updateUiState { copy(pw = it) } },
+//                    onConfirmPasswordChange = { viewModel.updateUiState { copy(pw2 = it) } },
+//                    onSignUpClick = { viewModel.signUp(onSuccess = {}) },
+//                    snackbarHostState = snackbarHostState,
+//                    uiState = uiState
+//                )
             }
             //パスワードリセット画面
             composable(Screen.ForgotPassword.route) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Screen.Auth.route) }
-                val viewModel:LoginViewModel = hiltViewModel(parentEntry)
-                val uiState by viewModel.uiState.collectAsState()
-
-                ForgotPasswordScreen(
-                    navController = navController,
-                    onMessageReset = { viewModel.updateUiState { copy(success = "", error = "") }},
-                    onEmailChange = { viewModel.updateUiState { copy(email = it) } },
-                    onForgotPw = {
-                        viewModel.forgotPassword(
-                            onSuccess = { navController.navigate(Screen.Login.route) }
-                        )
-                    },
-                    uiState = uiState
-                )
+//                val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Screen.Auth.route) }
+//                val viewModel:LoginViewModel_bu = hiltViewModel(parentEntry)
+//                val uiState by viewModel.uiState.collectAsState()
+//
+//                ForgotPasswordScreen(
+//                    navController = navController,
+//                    onMessageReset = { viewModel.updateUiState { copy(success = "", error = "") }},
+//                    onEmailChange = { viewModel.updateUiState { copy(email = it) } },
+//                    onForgotPw = {
+//                        viewModel.forgotPassword(
+//                            onSuccess = { navController.navigate(Screen.Login.route) }
+//                        )
+//                    },
+//                    uiState = uiState
+//                )
             }
         }
 

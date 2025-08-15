@@ -34,4 +34,9 @@ class FirebaseAuthRepository @Inject constructor():AuthRepository{
                 FirebaseAuth.getInstance().removeAuthStateListener(listener)    //リスナーを外す
             }
         }
+
+    //ログアウトの処理
+    override fun signOut() {
+        FirebaseAuth.getInstance().signOut()
+    }
 }

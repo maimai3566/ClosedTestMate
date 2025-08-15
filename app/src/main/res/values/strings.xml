@@ -6,6 +6,7 @@
 
     <string name="login">ログイン</string>
     <string name="logout">ログアウト</string>
+    <string name="cancel">キャンセル</string>
 
     <string name="signup">新しいアカウントを作る</string>
     <string name="signup_title">アカウントを登録してね</string>
@@ -26,9 +27,13 @@
     <string name="pw_hide">パスワードを隠す</string>
     <string name="show_pw">パスワードを見せる</string>"
 
-    <string name="msg_login_error">ログインできませんでした。</string>
-    <string name="msg_login_success">ログインしました！</string>
+    <string name="msg_login_error">ログインできませんでした。。。☔</string>
+    <string name="msg_login_success">ログインしました🌞🌞</string>
     <string name="msg_login_required">投稿はログインしてからね🙇‍♀️</string>
+    <string name="msg_double_back">もう一度バックを押すとアプリが終了します👋</string>
+    <string name="logout_confirm">⚠️ログアウトしてもよい？⚠️</string>
+    <string name="msg_logout">ログアウトしました🫡</string>
+
     <string name="invalid_email_address">メールアドレスの形式が正しくありません</string>
     <string name="email_already_in_use">このメールアドレスはすでに登録済みです</string>
     <string name="password_should_be_at_least_6_characters">パスワードは6文字以上で設定してください</string>
@@ -56,4 +61,6 @@
     <string name="lbl_recruit_web_url">Web参加URL</string>
     <string name="icon_image">画像を追加</string>
     <string name="icon_text">文章を追加</string>
+
+
 </resources>

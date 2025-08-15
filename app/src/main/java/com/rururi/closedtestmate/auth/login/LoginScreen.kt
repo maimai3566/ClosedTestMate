@@ -1,8 +1,5 @@
-package com.rururi.closedtestmate.ui.login
+package com.rururi.closedtestmate.auth.login
 
-import android.R.attr.enabled
-import android.R.attr.text
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,25 +34,25 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.rururi.closedtestmate.R
-import com.rururi.closedtestmate.model.UserProfileUiState
+import com.rururi.closedtestmate.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    onMessageReset: () -> Unit = {},
+    uiState: LoginUiState = LoginUiState(),
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onLogin: () -> Unit = {},
     onForgotPw: () -> Unit = {},
-    onSignup: () -> Unit = {},
+    onSignUp: () -> Unit = {},
     onSkipLogin: () -> Unit = {},
-    uiState: UserProfileUiState,
 ){
     val keyboardController = LocalSoftwareKeyboardController.current    //キーボード
     var pwVisible by remember { mutableStateOf(false) } //パスワード表示有無
-
-    LaunchedEffect(Unit) { onMessageReset() }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -99,15 +96,15 @@ fun LoginScreen(
                 keyboardController?.hide()  //キーボードを閉じる
                 onLogin()     //ログイン処理
             },
-            enabled = uiState.email.isNotBlank() && uiState.pw.isNotBlank()
+            enabled = uiState.isValid
         ) {
             Text(text = stringResource(R.string.login))
         }
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         //エラー表示
-        if (uiState.error.isNotBlank()) {
+        uiState.error?.let{
             Text(
-                text = uiState.error,
+                text = stringResource(it.resId),
                 color = MaterialTheme.colorScheme.error
             )
             Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
@@ -126,7 +123,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
             //サインアップ
             TextButton(
-                onClick = onSignup,
+                onClick = onSignUp,
             ){
                 Text(
                     stringResource(R.string.signup),
@@ -147,7 +144,6 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    val uiState = UserProfileUiState()
-    LoginScreen(uiState = uiState)
+fun LoginScreenPreview(){
+    LoginScreen()
 }

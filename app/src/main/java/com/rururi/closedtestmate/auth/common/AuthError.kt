@@ -1,8 +1,6 @@
-package com.rururi.closedtestmate.ui.login
+package com.rururi.closedtestmate.auth.common
 
-import android.content.Context
 import androidx.annotation.StringRes
-import androidx.compose.ui.platform.LocalContext
 import com.rururi.closedtestmate.R
 
 sealed class AuthError(@StringRes val resId: Int) {

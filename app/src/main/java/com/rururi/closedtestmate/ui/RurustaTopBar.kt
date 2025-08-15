@@ -1,6 +1,8 @@
 package com.rururi.closedtestmate.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -20,20 +22,24 @@ import com.rururi.closedtestmate.model.TabUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RurustaTopBar(title:String) {
+fun RurustaTopBar(
+    title:String,
+    actions: @Composable RowScope.() -> Unit = {}
+    ) {
     val tabTitles = TabType.allTabs.map { stringResource(it.titleRes) }
     val viewModel: TabListViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val selectedTabIndex = TabType.allTabs.indexOf(uiState.selectedTab) // 選択されたタブのインデックスを取得
 
-    Column() {
+    Column {
         TopAppBar(
             title = {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.headlineSmall
                 )
-            }
+            },
+            actions = actions
         )
         TabRow(selectedTabIndex = selectedTabIndex){
             tabTitles.forEachIndexed { index, title ->
