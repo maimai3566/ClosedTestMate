@@ -11,7 +11,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.core.net.toUri
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.DocumentSnapshot
+import com.rururi.closedtestmate.auth.common.AuthError
 import com.rururi.closedtestmate.model.DetailContent
 import com.rururi.closedtestmate.model.RecruitStatus
 import com.rururi.closedtestmate.model.RecruitUiState
@@ -114,5 +119,17 @@ fun String.toAnnotatedString(url:String,color: Color = Color.Blue):AnnotatedStri
         }
         pop()
     }
+}
+
+//例外→AuthErrorの共通変換
+fun Throwable.toAuthError(): AuthError {
+    val code = when (this) {
+        is FirebaseAuthInvalidUserException -> this.errorCode
+        is FirebaseAuthInvalidCredentialsException -> this.errorCode
+        is FirebaseAuthUserCollisionException -> this.errorCode
+        is FirebaseAuthException -> this.errorCode
+        else -> null
+    }
+    return AuthError.fromException(code)
 }
 

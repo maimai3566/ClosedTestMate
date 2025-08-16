@@ -1,16 +1,9 @@
 package com.rururi.closedtestmate.auth.login
 
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.rururi.closedtestmate.auth.common.AuthError
+import com.rururi.closedtestmate.ui.components.toAuthError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,17 +41,5 @@ class LoginViewModel @Inject constructor(): ViewModel() {
                     it.copy(isLoading = false, error = authError, success = false)
                 }
             }
-    }
-
-    //例外→AuthErrorの共通変換
-    private fun Throwable.toAuthError(): AuthError {
-        val code = when (this) {
-            is FirebaseAuthInvalidUserException -> this.errorCode
-            is FirebaseAuthInvalidCredentialsException -> this.errorCode
-            is FirebaseAuthUserCollisionException -> this.errorCode
-            is FirebaseAuthException -> this.errorCode
-            else -> null
-        }
-        return AuthError.fromException(code)
     }
 }

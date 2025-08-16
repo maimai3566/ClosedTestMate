@@ -24,15 +24,18 @@ import kotlinx.coroutines.delay
 @Composable
 fun SlideMessage(
     message: String,
-    onAnimationEnd: () -> Unit = {}
+    onAnimationEnd: () -> Unit = {},
+    showMillis: Long = 2500,  //アニメ表示
+    enterMillis: Long = 500, //入場アニメ
+    exitMillis: Long = 500   //退場アニメ
 ) {
     var visible by remember { mutableStateOf(false) }
     Log.d("ruruS","SlideMessageのメッセージ:$message")
-    LaunchedEffect(message) {
+    LaunchedEffect(message, showMillis, enterMillis, exitMillis) {
         visible = true
-        delay(2000) // Message display time
+        delay(enterMillis + showMillis)
         visible = false
-        delay(500) // Animation duration
+        delay(exitMillis) // Animation duration
         onAnimationEnd()    //アニメーションが終わった時の処理
     }
 

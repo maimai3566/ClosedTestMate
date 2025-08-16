@@ -25,9 +25,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -42,25 +46,17 @@ import com.rururi.closedtestmate.ui.navigation.Screen
 @Composable
 fun SignupScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
-    onMessageReset: () -> Unit = {},
+    uiState: SignupUiState = SignupUiState(),
+//    navController: NavController = rememberNavController(),
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onConfirmPasswordChange: (String) -> Unit = {},
     onSignUpClick: () -> Unit = {},
-    snackbarHostState: SnackbarHostState,
-    uiState: UserProfileUiState
 ) {
-    val email = uiState.email
-    val pw = uiState.pw
-    val pw2 = uiState.pw2
-    val error = uiState.error
-    val success = uiState.success
-
     val keyboardController = LocalSoftwareKeyboardController.current
-    var passwordVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) { onMessageReset() }
+    val focusManager = LocalFocusManager.current
+    var pwVisible by remember { mutableStateOf(false) }
+    var pw2Visible by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -72,53 +68,73 @@ fun SignupScreen(
             style = MaterialTheme.typography.headlineMedium
         )
         OutlinedTextField(
-            value = email,
+            value = uiState.email,
             onValueChange = onEmailChange,
             label = { Text(stringResource(R.string.email) + "*") },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            )
         )
         Spacer(modifier=Modifier.padding(dimensionResource(R.dimen.p_small)))
         OutlinedTextField(
-            value = pw,
+            value = uiState.pw,
             onValueChange = onPasswordChange,
             label = { Text(stringResource(R.string.pw) + "*") },
             singleLine = true,
-            visualTransformation = if (!passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (!pwVisible) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = { pwVisible = !pwVisible }) {
                     val visibilityIcon =
-                        if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (passwordVisible) "Hide password" else "Show password"
+                        if (pwVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val description = if (pwVisible) "Hide password" else "Show password"
                     Icon(imageVector = visibilityIcon, contentDescription = description)
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            )
         )
         Spacer(modifier=Modifier.padding(dimensionResource(R.dimen.p_small)))
         OutlinedTextField(
-            value = pw2,
+            value = uiState.pw2,
             onValueChange = onConfirmPasswordChange,
             label = { Text(stringResource(R.string.pw2) + "*") },
             singleLine = true,
-            visualTransformation = if (!passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (!pw2Visible) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = { pw2Visible = !pw2Visible }) {
                     val visibilityIcon =
-                        if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (passwordVisible) "Hide password" else "Show password"
+                        if (pw2Visible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val description = if (pw2Visible) "Hide password" else "Show password"
                     Icon(imageVector = visibilityIcon, contentDescription = description)
                 }
             },
-            keyboardActions = KeyboardActions( onDone = { keyboardController?.hide() }),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Exit) //フォーカスをどこにもあてないようにして
+                    keyboardController?.hide()  //キーボードを閉じる
+                }
+            ),
         )
 
         //登録ボタン
         Button(
             onClick = onSignUpClick,
             modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)),
-            enabled = email.isNotBlank() && pw.isNotBlank() && pw2.isNotBlank() && pw == pw2,
+            enabled = uiState.isValid,
         ){
             Text(
                 text = stringResource(R.string.signup_button),
@@ -126,22 +142,14 @@ fun SignupScreen(
             )
         }
         Spacer(modifier=Modifier.padding(dimensionResource(R.dimen.p_small)))
-        //成功メッセージ
-        if (success.isNotBlank()) {
-            SlideMessage(message = success)
-            LaunchedEffect(success) {
-                navController.navigate(Screen.RecruitList.route) {
-                    popUpTo(Screen.Login.route) { inclusive = true }
-                }
-            }
-        }
-        //エラーメッセージ
-        if (error.isNotBlank()){
+
+        //エラー表示
+        uiState.error?.let{
             Text(
-                text = error.toString(),
+                text = stringResource(it.resId),
                 color = MaterialTheme.colorScheme.error
             )
-            Spacer(modifier=Modifier.padding(dimensionResource(R.dimen.p_small)))
+            Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         }
     }
 }
@@ -151,5 +159,5 @@ fun SignupScreen(
 @Preview(showBackground = true)
 @Composable
 fun SignupScreenPreview() {
-    SignupScreen(snackbarHostState = SnackbarHostState(), uiState = UserProfileUiState())
+    SignupScreen()
 }

@@ -55,32 +55,18 @@ fun RurustaApp(onExit : () -> Unit) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val hideTopBarRoutes = listOf(Screen.Login.route, Screen.Signup.route, Screen.ForgotPassword.route)
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    //
-    val loginMsg = stringResource(R.string.msg_login_required)   //ログインするよう促すメッセージ
-    var showLoginMessage by remember { mutableStateOf(false) }
+    //未ログインでFABをクリックしたとき
+    var showLoginRequired by remember { mutableStateOf(false) } //ログインを促すメッセージ
 
+    //home(一覧画面）にいるときにバックをタップしたとき
     val exitMsg = stringResource(R.string.msg_double_back)
     var backArmed by remember { mutableStateOf(false) }
     var showExitMessage by remember { mutableStateOf(false) }   //ダブルバックした時の処理
 
-    //login関係
-    val loginSuccessMsg = stringResource(R.string.msg_login_success)
-    var prevLoggedIn by remember { mutableStateOf(isLoggedIn)}  //アプリ起動時のログイン状態
-    var showLoginSuccess by remember { mutableStateOf(false) }  //ログインしました
-
     //logout関係
     var showLogoutConfirm by remember { mutableStateOf(false) } //ログアウトの確認
     var showLoggedOutMessage by remember { mutableStateOf(false) }  //ログアウトしました
-
-    //ログイン状態が変化したとき
-    LaunchedEffect(isLoggedIn) {    //isLoggedInが変化したときに実行
-        if (!prevLoggedIn && isLoggedIn) {   //初期が未ログインで現在がログインの時は
-            showLoginSuccess = true       //ログインしましたメッセージを表示する
-        }
-        prevLoggedIn = isLoggedIn
-    }
 
     //backArmedは2秒で解除
     LaunchedEffect(backArmed) {
@@ -98,6 +84,23 @@ fun RurustaApp(onExit : () -> Unit) {
             showExitMessage = true
         }
     }
+
+    //login成功メッセージ
+    var showLoginSuccessMsg by remember { mutableStateOf(false) }
+    LaunchedEffect(isLoggedIn,currentRoute) {
+        if (isLoggedIn && currentRoute == Screen.Login.route) {
+            showLoginSuccessMsg = true  //SlideMessageでアニメーションさせる
+        }
+    }
+
+    //サインアップ成功メッセージ
+    var showSignupSuccessMsg by remember { mutableStateOf(false) }
+    LaunchedEffect(isLoggedIn,currentRoute) {
+        if (isLoggedIn && currentRoute == Screen.Signup.route) {
+            showSignupSuccessMsg = true  //SlideMessageでアニメーションさせる
+        }
+    }
+
     Scaffold(
         topBar = {
             if (currentRoute !in hideTopBarRoutes) {    //authルートにいるときはトップバーを表示させない
@@ -124,7 +127,6 @@ fun RurustaApp(onExit : () -> Unit) {
                 // TODO: Implement BottomBar
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             Log.d("ruruS FAB", "isLoggedIn: $isLoggedIn")
             if (currentRoute == Screen.RecruitList.route) {
@@ -133,11 +135,10 @@ fun RurustaApp(onExit : () -> Unit) {
                         if (isLoggedIn) {   //ログイン状態であれば
                             navController.navigate(Screen.RecruitNew.route)
                         } else {            //未ログイン状態であれば
-                            //アニメーションが始まる前にバックスタックを保存しておく
-                            navController.currentBackStackEntry     //バックスタックに
-                                ?.savedStateHandle                  //ハンドルの状態を保存し
-                                ?.set("redirect", Screen.RecruitNew.route)  //ログイン後のリダイレクト先セットしてから
-                            showLoginMessage = true //バックスタックの保存が終わってからアニメ開始
+                            showLoginRequired = true //スライドメッセージ
+                            navController.navigate(Screen.Login.route) {    //メッセージが終わってからログインへ
+                                launchSingleTop = true
+                            }
                         }
                     }
                 ) {
@@ -152,23 +153,43 @@ fun RurustaApp(onExit : () -> Unit) {
         Box(modifier = Modifier.padding(innerPadding)) {
             AppNavGraph(
                 navController = navController,
-                snackbarHostState = snackbarHostState,
                 isLoggedIn = isLoggedIn,
             )
-            //ログイン成功のメッセージ
-            if (showLoginSuccess) {
+
+            //サインアップ成功時のメッセージ
+            if (showSignupSuccessMsg) {
                 SlideMessage(
-                    message = loginSuccessMsg,
-                    onAnimationEnd = { showLoginSuccess = false }
+                    message = stringResource(R.string.msg_signup_success),
+                    onAnimationEnd = {
+                        showSignupSuccessMsg = false
+                        navController.navigate(Screen.RecruitList.route) {
+                            popUpTo(Screen.Auth.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+
+            //ログイン成功時のメッセージ
+            if (showLoginSuccessMsg) {
+                SlideMessage(
+                    message = stringResource(R.string.msg_login_success),
+                    onAnimationEnd = {
+                        showLoginSuccessMsg = false
+                        navController.navigate(Screen.RecruitList.route) {
+                            popUpTo(Screen.Auth.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
                 )
             }
 
             //新規登録時に未ログインの時にログインを促すメッセージ
-            if (showLoginMessage) {
+            if (showLoginRequired) {
                 SlideMessage(
-                    message = loginMsg,                  //メッセージをアニメさせる
+                    message = stringResource(R.string.msg_login_required),                  //メッセージをアニメさせる
                     onAnimationEnd = {
-                        showLoginMessage = false    //アニメのフラグを切って
+                        showLoginRequired = false    //アニメのフラグを切って
                         navController.navigate(Screen.Login.route)  //画面遷移
                     }
                 )

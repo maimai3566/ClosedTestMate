@@ -1,5 +1,6 @@
 package com.rururi.closedtestmate.auth.forgot
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,10 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.rururi.closedtestmate.R
 import com.rururi.closedtestmate.model.UserProfileUiState
 import com.rururi.closedtestmate.ui.anime.SlideMessage
@@ -29,18 +29,14 @@ import com.rururi.closedtestmate.ui.navigation.Screen
 import kotlinx.coroutines.delay
 
 @Composable
-fun ForgotPasswordScreen(
+fun ForgotScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
-    onMessageReset: () -> Unit = {},
+    uiState: ForgotUiState = ForgotUiState(),
     onEmailChange: (String) -> Unit = {},
     onForgotPw: () -> Unit = {},
-    uiState: UserProfileUiState,
+    onResetSuccess: () -> Unit = {},
+    navToLogin: () -> Unit = {}
 ) {
-    val email = uiState.email
-    val error = uiState.error
-    val success = uiState.success
-
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -56,39 +52,44 @@ fun ForgotPasswordScreen(
         )
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
         OutlinedTextField(
-            value = email,
+            value = uiState.email,
             onValueChange = onEmailChange,
             label = { Text(text = stringResource(R.string.email) + "*") },
             singleLine = true,
             keyboardActions = KeyboardActions( onDone = { keyboardController?.hide() }),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done),
         )
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)))
 
         Button(
             onClick = onForgotPw,
             modifier = Modifier.padding(dimensionResource(R.dimen.p_medium)),
-            enabled = email.isNotBlank(),
+            enabled = uiState.isValid,
         ) {
             Text(
                 text = stringResource(R.string.forgot_pw_button),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-
-        //成功メッセージ
-        if (success.isNotBlank()) {
-            SlideMessage(message = success)
-            LaunchedEffect(success) {
-                delay(2000)
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Login.route) { inclusive = true }
+        //パスワードリセット成功
+        if (uiState.success) {
+            //メッセージ表示中は戻るボタンを無効
+            BackHandler(enabled = true) {}
+            SlideMessage(
+                message = stringResource(R.string.forgot_pw_success),
+                onAnimationEnd = {
+                    onResetSuccess()
+                    navToLogin()
                 }
-            }
+            )
         }
-        //失敗したときの処理
-        if(error.isNotBlank()) {
-            Text(text = error, color = MaterialTheme.colorScheme.error)
+        //エラー表示
+        uiState.error?.let{
+            Text(
+                text = stringResource(it.resId),
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         }
     }
 }
@@ -96,5 +97,5 @@ fun ForgotPasswordScreen(
 @Preview(showBackground = true)
 @Composable
 fun ForgotPasswordScreenPreview() {
-    ForgotPasswordScreen(uiState = UserProfileUiState())
+    ForgotScreen()
 }

@@ -11,11 +11,10 @@
     <string name="signup">新しいアカウントを作る</string>
     <string name="signup_title">アカウントを登録してね</string>
     <string name="signup_button">新規登録</string>
-    <string name="signup_success">登録完了です！ありがとう💗</string>
 
     <string name="forgot_pw">パスワードを忘れた</string>
     <string name="forgot_pw_title">パスワードをリセットするよ</string>
-    <string name="forgot_pw_button">パスワードをリセット</string>
+    <string name="forgot_pw_button">パスワードリセット</string>
     <string name="forgot_pw_success">パスワードリセット用のメールを発射🚀</string>
 
     <string name="email">メールアドレス</string>
@@ -33,6 +32,7 @@
     <string name="msg_double_back">もう一度バックを押すとアプリが終了します👋</string>
     <string name="logout_confirm">⚠️ログアウトしてもよい？⚠️</string>
     <string name="msg_logout">ログアウトしました🫡</string>
+    <string name="msg_signup_success">登録完了です！ありがとう💗</string>
 
     <string name="invalid_email_address">メールアドレスの形式が正しくありません</string>
     <string name="email_already_in_use">このメールアドレスはすでに登録済みです</string>

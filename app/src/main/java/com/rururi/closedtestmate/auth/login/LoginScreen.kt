@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -19,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,9 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -38,11 +43,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rururi.closedtestmate.R
+import com.rururi.closedtestmate.ui.anime.SlideMessage
 import com.rururi.closedtestmate.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
+//    navController: NavController = rememberNavController(),
     uiState: LoginUiState = LoginUiState(),
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
@@ -52,6 +59,7 @@ fun LoginScreen(
     onSkipLogin: () -> Unit = {},
 ){
     val keyboardController = LocalSoftwareKeyboardController.current    //キーボード
+    val focusManager = LocalFocusManager.current
     var pwVisible by remember { mutableStateOf(false) } //パスワード表示有無
 
     Column(
@@ -70,7 +78,8 @@ fun LoginScreen(
             onValueChange = onEmailChange,
             label = { Text(text = stringResource(R.string.email) + "*") },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) })
         )
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.p_small)))
         //PW
@@ -79,7 +88,8 @@ fun LoginScreen(
             onValueChange = onPasswordChange,
             label = { Text(text = stringResource(R.string.pw) + "*") },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
             visualTransformation = if (pwVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val icon = if (pwVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
