@@ -1,7 +1,6 @@
 package com.rururi.closedtestmate.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -15,17 +14,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rururi.closedtestmate.R
 import com.rururi.closedtestmate.model.TabType
-import com.rururi.closedtestmate.model.TabUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RurustaTopBar(
     title:String,
     actions: @Composable RowScope.() -> Unit = {}
-    ) {
+) {
     val tabTitles = TabType.allTabs.map { stringResource(it.titleRes) }
     val viewModel: TabListViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()

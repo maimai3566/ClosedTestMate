@@ -1,6 +1,5 @@
 package com.rururi.closedtestmate.data
 
-import com.rururi.closedtestmate.data.UserSession
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -8,6 +7,9 @@ interface AuthRepository {
     fun currentUser(): UserSession?            //単発で取得したいとき
     //監視をvalとしているのはずっと同じインスタンスだから
     //単発がfunなのは、呼び出すたびに最新を取得しに行くから
+
+    //名前変更(FirebaseのupdateProfileは非同期なのでsuspend)
+    suspend fun updateName(name: String): Result<Unit>
 
     fun signOut()
 }

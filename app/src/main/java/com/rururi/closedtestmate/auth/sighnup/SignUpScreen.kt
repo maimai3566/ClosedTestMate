@@ -47,7 +47,6 @@ import com.rururi.closedtestmate.ui.navigation.Screen
 fun SignupScreen(
     modifier: Modifier = Modifier,
     uiState: SignupUiState = SignupUiState(),
-//    navController: NavController = rememberNavController(),
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onConfirmPasswordChange: (String) -> Unit = {},

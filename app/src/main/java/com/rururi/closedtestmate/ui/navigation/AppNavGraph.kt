@@ -2,37 +2,30 @@ package com.rururi.closedtestmate.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.rururi.closedtestmate.auth.login.LoginScreen
-import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailScreen
-import com.rururi.closedtestmate.ui.recruitlist.RecruitListScreen
-import com.rururi.closedtestmate.ui.recruitnew.RecruitNewScreen
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.rururi.closedtestmate.auth.sighnup.SignupScreen
 import androidx.navigation.compose.navigation
-import com.rururi.closedtestmate.R
+import androidx.navigation.navArgument
 import com.rururi.closedtestmate.auth.forgot.ForgotScreen
 import com.rururi.closedtestmate.auth.forgot.ForgotViewModel
+import com.rururi.closedtestmate.auth.login.LoginScreen
 import com.rururi.closedtestmate.auth.login.LoginViewModel
+import com.rururi.closedtestmate.auth.sighnup.SignupScreen
 import com.rururi.closedtestmate.auth.sighnup.SignupViewModel
 import com.rururi.closedtestmate.model.LoadState
-import com.rururi.closedtestmate.ui.anime.SlideMessage
+import com.rururi.closedtestmate.ui.profile.ProfileScreen
+import com.rururi.closedtestmate.ui.profile.ProfileViewModel
+import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailScreen
 import com.rururi.closedtestmate.ui.recruitdetail.RecruitDetailViewModel
+import com.rururi.closedtestmate.ui.recruitlist.RecruitListScreen
 import com.rururi.closedtestmate.ui.recruitlist.RecruitListViewModel
-import kotlinx.coroutines.delay
+import com.rururi.closedtestmate.ui.recruitnew.RecruitNewScreen
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
@@ -159,6 +152,32 @@ fun AppNavGraph(
                 recruitId = recruitId,
                 uiState = uiState,
             )
+        }
+
+        //profile画面
+        composable(Screen.Profile.route) {
+            val viewModel: ProfileViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
+
+            ProfileScreen(
+                uiState = uiState,
+                onImageSelected = { viewModel.updateUiState { copy(session = session?.copy(photoUrl = it)) } },
+                onShowEdit = { viewModel.startEdit() },
+                onMyRecruitClick = { /*TODO*/ },
+                onFavoriteClick = { /*TODO*/ },
+                onLogoutClick = { viewModel.logout() },
+                onNameChange = { viewModel.onChangeName(it) },
+                onDismiss = { viewModel.dismissEdit() },
+                onConfirm = { viewModel.saveName() },
+            )
+        }
+        //search画面
+        composable(Screen.Search.route) {
+//            SearchScreen()
+        }
+        //favorite画面
+        composable(Screen.Favorite.route) {
+//            FavoriteScreen()
         }
     }
 }

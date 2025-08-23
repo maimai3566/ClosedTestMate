@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="p_none">0dp</dimen>
     <dimen name="p_extra_small">2dp</dimen>
     <dimen name="p_small">8dp</dimen>
     <dimen name="p_medium">16dp</dimen>
@@ -29,4 +30,8 @@
     <dimen name="edita_max_height">240dp</dimen>
 
     <dimen name="toast_pos_y">400dp</dimen>
+
+    <dimen name="button_large">240dp</dimen>
+    <dimen name="button_medium">180dp</dimen>
+    <dimen name="button_small">120dp</dimen>
 </resources>

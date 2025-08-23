@@ -42,6 +42,9 @@
     <string name="unknown_error">予期しないエラーが発生しました</string>
     <string name="user_not_found">メールアドレスが見つかりません</string>
     <string name="invalid_credentials">メールアドレスまたはパスワードが正しくありません</string>
+    <string name="name_cannot_be_empty">ニックネームを入力してください</string>
+    <string name="name_too_long">ニックネームは最大%1$d</string>
+    <string name="requires_recent_login">まずログインしてください</string>
 
     <string name="status_open">募集中</string>
     <string name="status_closed">募集終了</string>
@@ -50,6 +53,7 @@
     <string name="button_recruit_add">新規投稿!!!</string>
     <string name="button_recruit_clear">クリア</string>
     <string name="button_copy">コピー</string>
+    <string name="button_save">保存</string>
     <string name="msg_recruit_saved">投稿を保存しました🌟</string>"
 
     <string name="lbl_recruit_status">ステータス</string>
@@ -62,5 +66,22 @@
     <string name="icon_image">画像を追加</string>
     <string name="icon_text">文章を追加</string>
 
+    <string name="icon_home">募集一覧</string>
+    <string name="icon_search">検索</string>
+    <string name="icon_favorite">お気に入り</string>
+    <string name="icon_settings">プロフィール</string>
 
+    <string name="profile_title">プロフィール</string>
+    <string name="profile_icon">プロフィールアイコン</string>
+    <string name="profile_name">ニックネーム</string>
+    <string name="profile_email">メールアドレス</string>
+    <string name="profile_logout">ログアウト</string>
+    <string name="profile_my_recruit">自分の投稿を見る</string>
+    <string name="profile_favorite">お気に入りを見る</string>
+    <string name="profile_name_change">ニックネーム変更</string>
+    <string name="profile_name_change_success">ニックネームを変更しました💗</string>
+    <string name="profile_name_change_error">ニックネーム変更に失敗しました😭</string>
+
+    <string name="example_success">成功しました！！！</string>
+    <string name="example_error">エラーが発生しました</string>
 </resources>
