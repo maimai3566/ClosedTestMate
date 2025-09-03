@@ -2,7 +2,7 @@ package com.rururi.closedtestmate.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rururi.closedtestmate.data.AuthRepository
+import com.rururi.closedtestmate.auth.domain.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -82,6 +82,12 @@
     <string name="profile_name_change_success">ニックネームを変更しました💗</string>
     <string name="profile_name_change_error">ニックネーム変更に失敗しました😭</string>
 
+    <string name="list_no_recruit">投稿はありません😭</string>
+    <string name="list_no_favorite">お気に入りはありません😭</string>
+    <string name="list_no_search_result">検索結果はありません😭</string>
+    <string name="list_loading">投稿を読み込み中。。。。📒</string>
+    <string name="list_error">投稿の読み込みに失敗しました😭</string>
+
     <string name="example_success">成功しました！！！</string>
     <string name="example_error">エラーが発生しました</string>
 </resources>

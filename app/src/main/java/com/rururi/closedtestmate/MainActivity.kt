@@ -4,9 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.rururi.closedtestmate.core.ui.theme.RurustaTheme
 import com.rururi.closedtestmate.ui.RurustaApp
-import com.rururi.closedtestmate.ui.theme.RurustaTheme
 import dagger.hilt.android.AndroidEntryPoint
+
+//val Context.isDebuggable: Boolean
+//    get() = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -17,6 +20,7 @@ class MainActivity : ComponentActivity() {
             RurustaTheme {
                 RurustaApp(onExit = { finish() })
             }
+
         }
     }
 }
