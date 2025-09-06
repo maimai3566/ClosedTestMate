@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rururi.closedtestmate.auth.domain.AuthRepository
-import com.rururi.closedtestmate.core.model.SaveStatus
 import com.rururi.closedtestmate.recruit.domain.DetailContent
 import com.rururi.closedtestmate.recruit.domain.RecruitRepository
 import com.rururi.closedtestmate.recruit.domain.RecruitStatus
@@ -53,13 +52,13 @@ class RecruitNewViewModel @Inject constructor(
         val input = _uiState.value.input
         //ヴァリデーションチェック
         if (!input.isValid) {
-            _uiState.update { it.copy(saveStatus = SaveStatus.Failed) }
+            _uiState.update { it.copy(isSaving = false) }
             return
         }
         //ユーザが取得できなければ処理終わり
         val user = auth.currentUser()   //リポジトリからユーザ情報を取得
         if (user == null) {
-            _uiState.update { it.copy(saveStatus = SaveStatus.Failed) }
+            _uiState.update { it.copy(isSaving = false) }
             return
         }
 
@@ -69,34 +68,27 @@ class RecruitNewViewModel @Inject constructor(
             authorName = user.name ?:"",
             authorIcon = user.photoUrl
         )
-
+        Log.d("ruruv", "saveRecruit: $domain")
         //FirebaseのFirestoreに保存する
-        _uiState.update { it.copy(saveStatus = SaveStatus.Saving) } //保存中にする
+        _uiState.update { it.copy(isSaving = true) } //保存中にする
         viewModelScope.launch {
             try {
                 val docId = repo.add(domain)
                 Log.d("ruruv", "saveRecruit: $docId")
 
-                _uiState.update { it.copy(saveStatus = SaveStatus.Success,error = null) }
-                viewModelScope.launch {
-                    _event.emit(RecruitNewEvent.SaveSucceeded)  //イベントに保存成功を送信
-                }
+                _uiState.update { it.copy(isSaving = false) }
+                _event.emit(RecruitNewEvent.SaveSucceeded)  //イベントに保存成功を送信
             } catch (e: Exception) {
-                Log.e("ruruv", "saveRecruit: $e", e)
-                _uiState.update { it.copy(saveStatus = SaveStatus.Failed, error = e) }
+                _uiState.update { it.copy(isSaving = false) }
+                _event.emit(RecruitNewEvent.SaveFailed)     //イベントに保存失敗を送信
             }
         }
     }
 
-    fun resetStatus() {
-        _uiState.update { it.copy(isLoading = false, saveStatus = SaveStatus.Idle, error = null) }
-    }
-
     //スライドメッセージの表示終了
-    fun onMsgEnd() {
-        _uiState.update { it.copy(saveStatus = SaveStatus.Idle) }   //画面遷移してOK
-//        _uiState.update { it.copy(isSaved = false) } //画面遷移してOK
-    }
+//    fun onMsgEnd() {
+//        _uiState.update { it.copy(isSaving = false) }   //画面遷移してOK
+//    }
 
     //入力値をクリア
     fun clear() {
@@ -109,7 +101,7 @@ class RecruitNewViewModel @Inject constructor(
             appUrl = "",
             webUrl = "",
         ) }
-        updateUiState { copy(isLoading = false, saveStatus = SaveStatus.Idle, error = null) }
+        updateUiState { copy(isSaving = false) }
     }
 
     /**－－－－－details　API　ここから！－－－－－**/

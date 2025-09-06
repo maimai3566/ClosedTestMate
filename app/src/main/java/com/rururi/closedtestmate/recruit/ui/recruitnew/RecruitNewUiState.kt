@@ -1,15 +1,15 @@
 package com.rururi.closedtestmate.ui.recruitnew
 
 import android.net.Uri
-import com.rururi.closedtestmate.core.model.SaveStatus
 import com.rururi.closedtestmate.recruit.domain.DetailContent
 import com.rururi.closedtestmate.recruit.domain.RecruitStatus
 
 data class RecruitNewUiState(
-    val isLoading: Boolean = false,
+//    val isLoading: Boolean = false,
     val input: RecruitNewItem = RecruitNewItem(),   //入力部分だけ切り出し
-    val saveStatus: SaveStatus = SaveStatus.Idle,
-    val error: Exception? = null,
+    val isSaving: Boolean = false,  //保存中かどうか
+//    val saveStatus: SaveStatus = SaveStatus.Idle,
+//    val error: Exception? = null,
 )
 
 data class RecruitNewItem(

@@ -63,8 +63,8 @@ fun AppIconImage(
         border = if (border > 0.dp) BorderStroke(border, MaterialTheme.colorScheme.primary) else null,
         onClick = {
             if (onImageSelected != null) {
-                {launcher.launch("image/*")}
-            } else null
+                launcher.launch("image/*")
+            }
         },
         modifier = modifier.size(dimensionResource(size))
     ){

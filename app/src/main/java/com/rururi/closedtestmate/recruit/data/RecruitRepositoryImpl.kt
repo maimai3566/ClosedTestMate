@@ -1,5 +1,6 @@
 package com.rururi.closedtestmate.recruit.data
 
+import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -19,7 +20,7 @@ import javax.inject.Singleton
 class RecruitRepositoryImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : RecruitRepository {
-    private val col get() = db.collection("recruit")
+    private val col get() = db.collection("recruits")
 
     override fun getList(limit: Int) = callbackFlow {
         val reg = col.orderBy("postedAt", Query.Direction.DESCENDING)
@@ -46,6 +47,7 @@ class RecruitRepositoryImpl @Inject constructor(
 
     override suspend fun add(recruit: Recruit): String {
         val dto = recruit.toDto()
+        Log.d("ruruv", "add: $dto")
         return col.add(dto).await().id
     }
 

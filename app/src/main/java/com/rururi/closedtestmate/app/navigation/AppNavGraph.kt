@@ -157,7 +157,7 @@ fun AppNavGraph(
                 //投稿
                 onSaveClick = { viewModel.saveRecruit() },
                 onClearClick = { viewModel.clear() },
-                onMsgEnd = { viewModel.onMsgEnd() },
+//                onMsgEnd = { },
             )
         }
         //詳細画面

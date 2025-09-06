@@ -54,12 +54,14 @@
     <string name="button_recruit_clear">クリア</string>
     <string name="button_copy">コピー</string>
     <string name="button_save">保存</string>
-    <string name="msg_recruit_saved">投稿を保存しました🌟</string>"
+    <string name="save_succeeded">投稿しました🌸</string>
+    <string name="save_failed">投稿に失敗しました😭</string>
 
     <string name="lbl_recruit_status">ステータス</string>
     <string name="lbl_recruit_app_icon">アプリアイコン</string>
     <string name="lbl_recruit_app_name">アプリ名</string>
     <string name="lbl_recruit_details">募集内容</string>
+    <string name="lbl_recruit_detail">詳細</string>
     <string name="lbl_recruit_group_url">GoogleグループURL</string>
     <string name="lbl_recruit_app_url">Androidアプリ配布URL</string>
     <string name="lbl_recruit_web_url">Web参加URL</string>
@@ -90,4 +92,6 @@
 
     <string name="example_success">成功しました！！！</string>
     <string name="example_error">エラーが発生しました</string>
+
+
 </resources>
